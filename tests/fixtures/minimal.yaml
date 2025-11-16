@@ -1,0 +1,44 @@
+meta:
+  version: 1
+  bank_code: "TST"
+  model_name: "Test Model"
+  last_updated: "2023-01-01"
+dictionaries:
+  status_codes:
+    - id: active
+      name: Active
+    - id: inactive
+      name: Inactive
+entity_kinds:
+  - id: customer
+    name: Customer
+    name_ru: Клиент
+    metamodel_level: business_details
+    category: core
+    description: Customer entity
+    rules: Only active customers allowed
+    attributes:
+      - id: customer.status
+        name: Customer Status
+        metamodel_level: business_details
+        description: Tracks whether the customer is active
+        properties:
+          type: boolean
+          min_cardinality: 1
+          max_cardinality: 1
+  - id: account
+    name: Account
+    metamodel_level: data_details
+    category: core
+    description: Account entity
+    attributes: []
+relation_kinds:
+  - id: customer_to_account
+    name: Customer to Account
+    from_kind: customer
+    to_kind: account
+    metamodel_level: business_details
+    category: association
+    direction: directed
+    description: Links customers with their accounts
+    rules: Customer must own the account
