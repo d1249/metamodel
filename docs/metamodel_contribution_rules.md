@@ -10,6 +10,7 @@
 ## 2. Требования к структуре и схеме
 1. **Формат:**
    - Поддерживайте ключи `version`, `bank_code`, `model_name`, `last_updated` и корневые разделы `dictionaries.metamodel_levels`, `entity_kinds`, `relation_kinds`.
+   - В каталоге `relation_kinds` уже описаны горизонтальные связи Job Family с банковскими продуктами, интеграциями и логическими/инфраструктурными ресурсами; при расширении проверяйте, не дублируют ли новые записи `job_family_has_bank_product`, `job_family_owns_integration`, `job_family_uses_logical_resource`, `job_family_depends_on_infrastructure_resource`.
    - Для новых сущностей обязательно указывайте `id`, `name`, `metamodel_level`, `category`, `description`, `rules`. Атрибуты и локализованные поля добавляйте только если они нужны.
    - В поле `metamodel_level` используйте только шесть значений Operational Metamodel: `strategic_view`, `business_details`, `data_details`, `solution_details`, `component_details`, `infrastructure_details`.
 2. **JSON Schema:**
