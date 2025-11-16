@@ -2,7 +2,7 @@ meta:
   version: 1
   bank_code: "BANK"
   model_name: "enterprise_metamodel"
-  last_updated: "2025-11-17"
+  last_updated: "2025-11-16"
   locale: "ru-RU"
 
 dictionaries:
@@ -48,6 +48,11 @@ entity_kinds:
       - Название и смысл задаёт руководитель домена.
       - Список ведётся в отдельном реестре, изменение — только через руководителя домена.
       - Обновление состава Job Family не меняет историю уже созданных сущностей.
+    attributes:
+      - id: job_family.business_domain_id
+        name: "Бизнес-домен"
+        metamodel_level: strategic_view
+        description: "Домен, в котором оперирует семейство."
 
   - id: value_stream
     name: "Value Stream"
@@ -122,6 +127,10 @@ entity_kinds:
         metamodel_level: strategic_view
         description: "Классификация важности домена для банка (Tier1/Tier2/Tier3 и
           т.п.)."
+      - id: business_domain.owning_org_unit_id
+        name: "Владеющая орг. единица"
+        metamodel_level: business_details
+        description: "Кто отвечает за домен."
 
   - id: customer_segment
     name: "Customer Segment"
@@ -148,6 +157,28 @@ entity_kinds:
       - Служит для описания «через что» доставляется ценность.
       - Может быть физическим или цифровым каналом.
 
+  - id: organizational_unit
+    name: "Organizational Unit"
+    name_ru: "Организационная единица"
+    metamodel_level: strategic_view
+    category: business_structure
+    description: >-
+      Формальный элемент оргструктуры банка (департамент, управление,
+      tribe), отвечающий за определённый набор целей и ресурсов.
+    attributes:
+      - id: organizational_unit.type
+        name: "Тип"
+        metamodel_level: strategic_view
+        description: "Департамент, управление, команда и т.д."
+      - id: organizational_unit.parent_org_unit_id
+        name: "Родительская единица"
+        metamodel_level: strategic_view
+        description: "Иерархия оргструктуры."
+      - id: organizational_unit.business_domain_id
+        name: "Бизнес-домен"
+        metamodel_level: strategic_view
+        description: "Домен, за который отвечает единица."
+
   - id: business_goal
     name: "Goal"
     name_ru: "Цель"
@@ -159,6 +190,15 @@ entity_kinds:
     rules: |-
       - Формулируется измеримым образом.
       - Может быть связана с доменом, потоком ценности и продуктом.
+    attributes:
+      - id: business_goal.org_unit_id
+        name: "Орг. единица"
+        metamodel_level: strategic_view
+        description: "Кто отвечает за достижение цели."
+      - id: business_goal.business_capability_id
+        name: "Способность"
+        metamodel_level: strategic_view
+        description: "Бизнес-способность, которую развивает цель."
 
   - id: product
     name: "Product"
@@ -172,6 +212,38 @@ entity_kinds:
       - Имеет продуктовые метрики (доходность, количество пользователей и т.п.).
       - Имеет целевую аудиторию (клиентские сегменты).
 
+  - id: bank_product
+    name: "Bank Product"
+    name_ru: "Банковский продукт"
+    metamodel_level: business_details
+    category: offering
+    description: >-
+      Формализованное предложение банка, имеющее владельца, ценность,
+      привязку к продуктовой семье и целевому сегменту клиентов.
+      Используется как единица планирования портфеля и управления
+      бизнес-метриками.
+    attributes:
+      - id: bank_product.description
+        name: "Описание продукта"
+        metamodel_level: business_details
+        description: "Краткое назначение и особенности продукта."
+      - id: bank_product.job_family_id
+        name: "Продуктовое семейство"
+        metamodel_level: strategic_view
+        description: "Связь с Job Family, отвечающей за продукт."
+      - id: bank_product.value_id
+        name: "Ценность"
+        metamodel_level: strategic_view
+        description: "Какую ценность обеспечивает продукт."
+      - id: bank_product.business_owner_id
+        name: "Бизнес-владелец"
+        metamodel_level: business_details
+        description: "Ответственный за развитие и результат продукта."
+      - id: bank_product.customer_segment_id
+        name: "Клиентский сегмент"
+        metamodel_level: strategic_view
+        description: "Целевая аудитория, потребители ценности продукта."
+
   - id: value_consumer
     name: "Consumer of Value"
     name_ru: "Потребитель ценности"
@@ -182,6 +254,23 @@ entity_kinds:
       которая получает и использует создаваемую банком ценность.
     rules: |-
       - Ведётся как справочник типов потребителей (клиент-заёмщик, госорган и т.д.).
+    attributes:
+      - id: value_consumer.type
+        name: "Тип потребителя"
+        metamodel_level: business_details
+        description: "Категория получателя ценности (клиент, партнёр, внутренний пользователь)."
+      - id: value_consumer.channel_id
+        name: "Канал взаимодействия"
+        metamodel_level: business_details
+        description: "Через какой канал потребитель получает ценность."
+      - id: value_consumer.value_id
+        name: "Ценность"
+        metamodel_level: strategic_view
+        description: "Какую ценность потребитель ожидает или получает."
+      - id: value_consumer.customer_segment_id
+        name: "Клиентский сегмент"
+        metamodel_level: strategic_view
+        description: "Привязка к сегменту, который представляет потребитель."
 
   - id: value_stream_stage
     name: "Value Stream Stage"
@@ -196,6 +285,19 @@ entity_kinds:
       - Название — отглагольное существительное («Андеррайтинг заявки» и т.п.).
       - Не ведётся в отдельном реестре, является частью модели потока.
       - Соответствует бизнес-процессу самого высокого уровня.
+    attributes:
+      - id: value_stream_stage.value_creation_flow_id
+        name: "Поток создания ценности"
+        metamodel_level: business_details
+        description: "Идентификатор value creation flow, частью которого является стадия."
+      - id: value_stream_stage.business_capability_id
+        name: "Опорная способность"
+        metamodel_level: strategic_view
+        description: "Какая бизнес-способность обеспечивает выполнение стадии."
+      - id: value_stream_stage.business_process_id
+        name: "Связанный бизнес-процесс"
+        metamodel_level: business_details
+        description: "Процесс, реализующий стадию потока ценности."
 
   - id: business_process
     name: "Business Process"
@@ -208,6 +310,23 @@ entity_kinds:
     rules: |-
       - Может состоять из одного или нескольких бизнес-функций.
       - Может пересекать несколько подразделений и ролей.
+    attributes:
+      - id: business_process.business_capability_id
+        name: "Поддерживающая способность"
+        metamodel_level: strategic_view
+        description: "Какая бизнес-способность обеспечивает процесс."
+      - id: business_process.business_domain_id
+        name: "Бизнес-домен"
+        metamodel_level: strategic_view
+        description: "К какому домену относится процесс."
+      - id: business_process.business_owner_id
+        name: "Владелец процесса"
+        metamodel_level: business_details
+        description: "Ответственный руководитель."
+      - id: business_process.tier
+        name: "Критичность процесса"
+        metamodel_level: business_details
+        description: "Уровень важности или иерархия (Tier)."
 
   - id: business_function
     name: "Business Function"
@@ -237,6 +356,38 @@ entity_kinds:
         name: "Бизнес-ключ"
         metamodel_level: data_details
         description: "Идентификатор сущности на уровне бизнес-логики."
+      - id: business_entity.master_system_id
+        name: "Master-система"
+        metamodel_level: solution_details
+        description: "ИТ-система, которая хранит золотую запись сущности."
+      - id: business_entity.business_domain_id
+        name: "Бизнес-домен"
+        metamodel_level: strategic_view
+        description: "Домены, в рамках которых используется сущность."
+      - id: business_entity.business_owner_id
+        name: "Бизнес-владелец"
+        metamodel_level: business_details
+        description: "Ответственный за развитие модели сущности."
+      - id: business_entity.lifecycle_status
+        name: "Статус жизненного цикла"
+        metamodel_level: data_details
+        description: "ACTIVE, DEPRECATED, PLANNED и т.п."
+      - id: business_entity.parent_entity_id
+        name: "Родительская сущность"
+        metamodel_level: data_details
+        description: "Ссылка для построения иерархий и наследования."
+      - id: business_entity.hierarchy_level
+        name: "Уровень иерархии"
+        metamodel_level: data_details
+        description: "Глубина вложенности в дереве сущностей."
+      - id: business_entity.is_abstract
+        name: "Абстрактная сущность"
+        metamodel_level: data_details
+        description: "Признак шаблонной сущности (Да/Нет)."
+      - id: business_entity.inheritance_type
+        name: "Тип наследования"
+        metamodel_level: data_details
+        description: "NONE, FULL или PARTIAL."
 
   - id: employee
     name: "Employee"
@@ -287,6 +438,26 @@ entity_kinds:
         name: "Статус жизненного цикла"
         metamodel_level: data_details
         description: "Например: draft / active / deprecated / retired."
+      - id: data_product.business_domain_id
+        name: "Бизнес-домен"
+        metamodel_level: strategic_view
+        description: "К какому домену относится дата-продукт."
+      - id: data_product.data_contract_id
+        name: "Дата-контракт"
+        metamodel_level: data_details
+        description: "Ссылка на контракт с потребителями."
+      - id: data_product.data_owner_id
+        name: "Владелец данных"
+        metamodel_level: business_details
+        description: "Орг-единица или роль, отвечающая за данные."
+      - id: data_product.data_object_id
+        name: "Data Object"
+        metamodel_level: data_details
+        description: "Основной объект данных, который реализует продукт."
+      - id: data_product.tier
+        name: "Tier продукта"
+        metamodel_level: business_details
+        description: "Критичность поддержки и SLA."
 
   - id: business_attribute
     name: "Business Attribute"
@@ -305,6 +476,84 @@ entity_kinds:
         name: "Уровень чувствительности"
         metamodel_level: data_details
         description: "Категория чувствительности, определяющая меры защиты."
+      - id: business_attribute.format_pattern
+        name: "Формат"
+        metamodel_level: data_details
+        description: "Шаблон значения (regex, дата-формат и т.д.)."
+      - id: business_attribute.is_required
+        name: "Обязательность"
+        metamodel_level: data_details
+        description: "Признак обязательного заполнения."
+      - id: business_attribute.is_unique
+        name: "Уникальность"
+        metamodel_level: data_details
+        description: "Требуется ли уникальность значения."
+      - id: business_attribute.is_sensitive
+        name: "Чувствительный атрибут"
+        metamodel_level: data_details
+        description: "Признак персональных/конфиденциальных данных."
+      - id: business_attribute.default_value
+        name: "Значение по умолчанию"
+        metamodel_level: data_details
+        description: "Используется при отсутствии ввода."
+      - id: business_attribute.validation_rules
+        name: "Правила валидации"
+        metamodel_level: data_details
+        description: "Набор бизнес-ограничений на значение."
+      - id: business_attribute.example_values
+        name: "Примеры значений"
+        metamodel_level: data_details
+        description: "Образцы данных для контекста."
+
+  - id: data_product_link
+    name: "Data Product Link"
+    name_ru: "Связь дата-продуктов"
+    metamodel_level: data_details
+    category: dependency
+    description: >-
+      Типизированная связь между дата-продуктами или объектами данных,
+      описывающая потребление, происхождение, композицию и трансформации.
+    attributes:
+      - id: data_product_link.link_type
+        name: "Тип связи"
+        metamodel_level: data_details
+        description: "BUSINESS_ENTITY_IMPLEMENTATION, LINEAGE, DEPENDENCY, COMPOSITION."
+      - id: data_product_link.source_type
+        name: "Тип источника"
+        metamodel_level: data_details
+        description: "Класс сущности, из которой строится связь."
+      - id: data_product_link.source_id
+        name: "Источник"
+        metamodel_level: data_details
+        description: "Идентификатор исходного дата-продукта или объекта."
+      - id: data_product_link.target_type
+        name: "Тип цели"
+        metamodel_level: data_details
+        description: "Класс целевой сущности."
+      - id: data_product_link.target_id
+        name: "Целевая сущность"
+        metamodel_level: data_details
+        description: "Идентификатор продукта/объекта назначения."
+      - id: data_product_link.relationship_type
+        name: "Характер связи"
+        metamodel_level: data_details
+        description: "IMPLEMENTS, CONSUMES, PRODUCES и т.д."
+      - id: data_product_link.transformation_logic
+        name: "Логика трансформации"
+        metamodel_level: component_details
+        description: "Описание преобразований между источником и целью."
+      - id: data_product_link.dependency_level
+        name: "Уровень зависимости"
+        metamodel_level: data_details
+        description: "Глубина/порядок зависимости (0..n)."
+      - id: data_product_link.pipeline_id
+        name: "Связанный пайплайн"
+        metamodel_level: solution_details
+        description: "Поток, реализующий связь."
+      - id: data_product_link.is_active
+        name: "Актуальность"
+        metamodel_level: data_details
+        description: "Признак действующей связи."
 
   - id: business_metric
     name: "Business Metric"
@@ -343,6 +592,166 @@ entity_kinds:
         name: "Схема таблицы"
         metamodel_level: data_details
         description: "Структура столбцов, типов данных и ключей."
+      - id: data_table.ddl_definition
+        name: "DDL"
+        metamodel_level: data_details
+        description: "DDL-скрипт создания таблицы."
+      - id: data_table.partition_info
+        name: "Партиционирование"
+        metamodel_level: data_details
+        description: "Правила партиционирования и ключи."
+      - id: data_table.is_pk
+        name: "Признак PK"
+        metamodel_level: data_details
+        description: "Хранит ли таблица первичный ключ бизнес-сущности."
+      - id: data_table.business_entity_id
+        name: "Бизнес-сущность"
+        metamodel_level: data_details
+        description: "Какой бизнес-объект представлен таблицей."
+      - id: data_table.data_owner_id
+        name: "Владелец данных"
+        metamodel_level: business_details
+        description: "Ответственный за таблицу."
+      - id: data_table.security_level_id
+        name: "Уровень безопасности"
+        metamodel_level: business_details
+        description: "Требуемая категория доступа."
+      - id: data_table.logical_resource_id
+        name: "Логический ресурс"
+        metamodel_level: solution_details
+        description: "Кластер/БД, где размещена таблица."
+
+  - id: topic
+    name: "Topic"
+    name_ru: "Топик данных"
+    metamodel_level: data_details
+    category: physical_data
+    description: >-
+      Потоковая сущность (Kafka, очереди, pub/sub), через которую
+      транслируются события или сообщения между системами.
+    attributes:
+      - id: topic.schema_definition
+        name: "Схема"
+        metamodel_level: data_details
+        description: "Структура сообщений топика."
+      - id: topic.logical_resource_id
+        name: "Логический ресурс"
+        metamodel_level: solution_details
+        description: "Кластер брокера, где размещён топик."
+      - id: topic.update_interval
+        name: "Интервал обновления"
+        metamodel_level: data_details
+        description: "Частота появления новых сообщений."
+      - id: topic.source_system_id
+        name: "Источник"
+        metamodel_level: solution_details
+        description: "ИТ-система, публикующая сообщения."
+      - id: topic.data_owner_id
+        name: "Владелец данных"
+        metamodel_level: business_details
+        description: "Ответственный за содержание топика."
+      - id: topic.security_level_id
+        name: "Уровень безопасности"
+        metamodel_level: business_details
+        description: "Категория доступа к сообщениям."
+
+  - id: data_schema
+    name: "Data Schema"
+    name_ru: "Схема данных"
+    metamodel_level: data_details
+    category: metadata
+    description: >-
+      Формальное описание структуры данных (DDL, Avro, JSON Schema),
+      применимое к таблицам, топикам и иным ресурсам.
+    attributes:
+      - id: data_schema.definition
+        name: "Определение"
+        metamodel_level: data_details
+        description: "Текстовое описание или документ схемы."
+      - id: data_schema.type
+        name: "Тип схемы"
+        metamodel_level: data_details
+        description: "Например, relational, avro, json."
+      - id: data_schema.topic_id
+        name: "Топик"
+        metamodel_level: data_details
+        description: "Топик, к которому относится схема."
+      - id: data_schema.data_table_id
+        name: "Таблица"
+        metamodel_level: data_details
+        description: "Таблица, использующая схему."
+
+  - id: data_attribute
+    name: "Data Attribute"
+    name_ru: "Физический атрибут"
+    metamodel_level: data_details
+    category: physical_data
+    description: >-
+      Колонка или поле физического хранилища, реализующая один
+      или несколько бизнес-атрибутов.
+    attributes:
+      - id: data_attribute.business_attribute_id
+        name: "Бизнес-атрибут"
+        metamodel_level: data_details
+        description: "Какой бизнес-атрибут реализуется."
+      - id: data_attribute.name
+        name: "Имя столбца"
+        metamodel_level: data_details
+        description: "Логическое название."
+      - id: data_attribute.data_type
+        name: "Тип данных"
+        metamodel_level: data_details
+        description: "SQL или иной тип."
+      - id: data_attribute.is_pk
+        name: "Входит в PK"
+        metamodel_level: data_details
+        description: "Признак участия в ключе."
+      - id: data_attribute.technical_name
+        name: "Техническое имя"
+        metamodel_level: data_details
+        description: "Имя в физическом хранилище."
+      - id: data_attribute.column_position
+        name: "Порядок колонки"
+        metamodel_level: data_details
+        description: "Номер столбца."
+      - id: data_attribute.max_length
+        name: "Максимальная длина"
+        metamodel_level: data_details
+        description: "Ограничение длины."
+      - id: data_attribute.is_nullable
+        name: "Допустимость NULL"
+        metamodel_level: data_details
+        description: "Можно ли хранить NULL."
+      - id: data_attribute.security_level_id
+        name: "Уровень безопасности"
+        metamodel_level: business_details
+        description: "Категория доступа к колонке."
+
+  - id: data_object_link
+    name: "Data Object Link"
+    name_ru: "Связь объектов данных"
+    metamodel_level: data_details
+    category: dependency
+    description: >-
+      Связь между источником и целевым дата-продуктом или объектом данных,
+      описывающая тип зависимости и назначение.
+    attributes:
+      - id: data_object_link.source_data_product_id
+        name: "Источник"
+        metamodel_level: data_details
+        description: "Дата-продукт, предоставляющий данные."
+      - id: data_object_link.target_data_product_id
+        name: "Получатель"
+        metamodel_level: data_details
+        description: "Дата-продукт, использующий данные."
+      - id: data_object_link.dependency_type
+        name: "Тип зависимости"
+        metamodel_level: data_details
+        description: "Например, PRODUCER, CONSUMER, TRANSFORM."
+      - id: data_object_link.description
+        name: "Описание"
+        metamodel_level: data_details
+        description: "Назначение или комментарий по связи."
 
   - id: file
     name: "File"
@@ -355,6 +764,27 @@ entity_kinds:
     rules: |-
       - Имеет тип и формат (CSV, PDF, Parquet и т.п.).
       - Может быть версионирован.
+    attributes:
+      - id: file.file_type
+        name: "Тип файла"
+        metamodel_level: data_details
+        description: "CSV, Parquet, PDF и т.д."
+      - id: file.storage_type
+        name: "Тип хранилища"
+        metamodel_level: infrastructure_details
+        description: "FS, объектное, корпоративный share."
+      - id: file.business_entity_id
+        name: "Бизнес-сущность"
+        metamodel_level: data_details
+        description: "Что представляет файл."
+      - id: file.data_owner_id
+        name: "Владелец"
+        metamodel_level: business_details
+        description: "Ответственный за файл."
+      - id: file.security_level_id
+        name: "Уровень безопасности"
+        metamodel_level: business_details
+        description: "Категория доступа."
 
   - id: ml_model
     name: "ML Model"
@@ -367,6 +797,27 @@ entity_kinds:
     rules: |-
       - Имеет тип, версию, метрики качества.
       - Ссылается на обучающие дата-продукты и наборы признаков.
+    attributes:
+      - id: ml_model.model_version
+        name: "Версия модели"
+        metamodel_level: solution_details
+        description: "Номер релиза/артефакта."
+      - id: ml_model.status
+        name: "Статус"
+        metamodel_level: solution_details
+        description: "Черновик, прод, снята с поддержки и т.п."
+      - id: ml_model.data_owner_id
+        name: "Владелец"
+        metamodel_level: business_details
+        description: "Ответственный за модель."
+      - id: ml_model.business_entity_id
+        name: "Бизнес-сущность"
+        metamodel_level: data_details
+        description: "Какую сущность описывает модель."
+      - id: ml_model.security_level_id
+        name: "Уровень безопасности"
+        metamodel_level: business_details
+        description: "Требования к доступу."
 
   - id: report
     name: "Report"
@@ -380,6 +831,35 @@ entity_kinds:
     rules: |-
       - Имеет регулярность обновления.
       - Содержит бизнес-ориентированное описание.
+    attributes:
+      - id: report.path
+        name: "Путь/URL"
+        metamodel_level: solution_details
+        description: "Где опубликован отчёт."
+      - id: report.extra_description
+        name: "Доп. описание"
+        metamodel_level: business_details
+        description: "Контекст использования."
+      - id: report.update_interval
+        name: "Интервал обновления"
+        metamodel_level: solution_details
+        description: "Периодичность публикации."
+      - id: report.business_entity_id
+        name: "Бизнес-сущность"
+        metamodel_level: data_details
+        description: "Что описывает отчёт."
+      - id: report.data_owner_id
+        name: "Владелец"
+        metamodel_level: business_details
+        description: "Ответственный за отчёт."
+      - id: report.metric_id
+        name: "Метрика"
+        metamodel_level: strategic_view
+        description: "Ключевая метрика отчёта."
+      - id: report.security_level_id
+        name: "Уровень безопасности"
+        metamodel_level: business_details
+        description: "Категория доступа."
 
   - id: ai_agent
     name: "AI Agent"
@@ -392,6 +872,15 @@ entity_kinds:
     rules: |-
       - Может принимать решения на основе данных и моделей.
       - Имеет привязку к дата-продуктам и политике доступа.
+    attributes:
+      - id: ai_agent.data_owner_id
+        name: "Владелец"
+        metamodel_level: business_details
+        description: "Кто управляет агентом."
+      - id: ai_agent.security_level_id
+        name: "Уровень безопасности"
+        metamodel_level: business_details
+        description: "Категория доступа к агенту."
 
   - id: notebook
     name: "Notebook"
@@ -404,6 +893,15 @@ entity_kinds:
     rules: |-
       - Объединяет код, визуализации и текстовые пояснения.
       - Не является источником данных, но сильно связан с ними.
+    attributes:
+      - id: notebook.data_owner_id
+        name: "Владелец"
+        metamodel_level: business_details
+        description: "Кто отвечает за ноутбук."
+      - id: notebook.security_level_id
+        name: "Уровень безопасности"
+        metamodel_level: business_details
+        description: "Категория доступа."
 
   - id: data_pipeline
     name: "Data Pipeline"
@@ -416,6 +914,19 @@ entity_kinds:
     rules: |-
       - Имеет расписание, конфигурацию и целевой набор данных.
       - Может состоять из нескольких коннекторов и трансформаций.
+    attributes:
+      - id: data_pipeline.type
+        name: "Тип пайплайна"
+        metamodel_level: solution_details
+        description: "ETL, ELT, streaming и т.п."
+      - id: data_pipeline.config_parameters
+        name: "Конфигурация"
+        metamodel_level: solution_details
+        description: "Набор параметров запуска."
+      - id: data_pipeline.schedule
+        name: "Расписание"
+        metamodel_level: solution_details
+        description: "Cron/airflow расписание выполнения."
 
   - id: connector
     name: "Connector"
@@ -427,6 +938,59 @@ entity_kinds:
       (БД, очередь, API), абстрагирующий детали протокола.
     rules: |-
       - Конфигурируется параметрами подключения, схемой безопасности.
+    attributes:
+      - id: connector.type
+        name: "Тип коннектора"
+        metamodel_level: component_details
+        description: "Источник, приёмник, двусторонний и т.п."
+      - id: connector.config
+        name: "Конфигурация"
+        metamodel_level: component_details
+        description: "Параметры подключения и безопасности."
+      - id: connector.topic_id
+        name: "Связанный топик"
+        metamodel_level: data_details
+        description: "Топик/очередь, с которой работает коннектор."
+      - id: connector.pipeline_id
+        name: "Пайплайн"
+        metamodel_level: solution_details
+        description: "Поток, частью которого является коннектор."
+
+  - id: logical_resource
+    name: "Logical Resource"
+    name_ru: "Логический ресурс"
+    metamodel_level: solution_details
+    category: infrastructure
+    description: >-
+      Абстракция над физической инфраструктурой (кластер, база, виртуальный
+      хост), к которой привязываются таблицы, топики и приложения.
+    attributes:
+      - id: logical_resource.type
+        name: "Тип ресурса"
+        metamodel_level: solution_details
+        description: "БД, брокер сообщений, файловое хранилище и т.д."
+      - id: logical_resource.it_system_id
+        name: "ИТ-система"
+        metamodel_level: solution_details
+        description: "Система, владеющая ресурсом."
+
+  - id: infrastructure_resource
+    name: "Infrastructure Resource"
+    name_ru: "Инфраструктурный ресурс"
+    metamodel_level: infrastructure_details
+    category: infrastructure
+    description: >-
+      Физическая или виртуальная вычислительная единица (сервер, контейнер,
+      платформа), на которой развёрнуты компоненты.
+    attributes:
+      - id: infrastructure_resource.type
+        name: "Тип"
+        metamodel_level: infrastructure_details
+        description: "Сервер, кластер, сеть и т.п."
+      - id: infrastructure_resource.description
+        name: "Описание"
+        metamodel_level: infrastructure_details
+        description: "Свободное текстовое описание ресурса."
 
   - id: transformation
     name: "Transformation"
@@ -438,6 +1002,19 @@ entity_kinds:
       (фильтрация, агрегация, обогащение и т.п.).
     rules: |-
       - Может быть простой или сложной; обычно описывается декларативно.
+    attributes:
+      - id: transformation.type
+        name: "Тип трансформации"
+        metamodel_level: component_details
+        description: "Фильтрация, агрегация, enrichment и т.п."
+      - id: transformation.logic_definition
+        name: "Описание логики"
+        metamodel_level: component_details
+        description: "SQL, скрипт или конвейер операций."
+      - id: transformation.pipeline_id
+        name: "Пайплайн"
+        metamodel_level: solution_details
+        description: "Поток, внутри которого выполняется трансформация."
 
   - id: data_pipeline_run
     name: "Data Pipeline Run"
@@ -450,6 +1027,47 @@ entity_kinds:
     rules: |-
       - Фиксирует метрики (количество записей, длительность, статус).
       - Используется для мониторинга производительности и инцидентов.
+    attributes:
+      - id: data_pipeline_run.start_ts
+        name: "Начало выполнения"
+        metamodel_level: solution_details
+        description: "Время старта запуска."
+      - id: data_pipeline_run.end_ts
+        name: "Окончание"
+        metamodel_level: solution_details
+        description: "Время завершения запуска."
+      - id: data_pipeline_run.status
+        name: "Статус"
+        metamodel_level: solution_details
+        description: "SUCCESS, FAILED и т.п."
+      - id: data_pipeline_run.records_processed
+        name: "Обработано записей"
+        metamodel_level: solution_details
+        description: "Количество записей за запуск."
+      - id: data_pipeline_run.portion_data
+        name: "Объём данных"
+        metamodel_level: solution_details
+        description: "Информация об объёме или партициях."
+      - id: data_pipeline_run.business_dates
+        name: "Бизнес-даты"
+        metamodel_level: business_details
+        description: "Диапазон бизнес-дат, затронутых запуском."
+      - id: data_pipeline_run.partition_name
+        name: "Партиция"
+        metamodel_level: data_details
+        description: "Имя обработанной партиции."
+      - id: data_pipeline_run.data_ready_ts
+        name: "Готовность данных"
+        metamodel_level: solution_details
+        description: "Момент, когда данные доступны потребителям."
+      - id: data_pipeline_run.airflow_execution_date
+        name: "Airflow execution date"
+        metamodel_level: solution_details
+        description: "Техническая дата запуска."
+      - id: data_pipeline_run.insert_ts
+        name: "Запись метрики"
+        metamodel_level: solution_details
+        description: "Когда информация о запуске зафиксирована."
 
   - id: api
     name: "API"
@@ -462,6 +1080,257 @@ entity_kinds:
     rules: |-
       - Ведётся в реестре API, публикуется на API-портале.
       - Как правило, описывается спецификациями OpenAPI / AsyncAPI.
+    attributes:
+      - id: api.component_id
+        name: "Компонент"
+        metamodel_level: solution_details
+        description: "Компонент, предоставляющий API."
+      - id: api.description
+        name: "Описание API"
+        metamodel_level: solution_details
+        description: "Назначение и контекст."
+
+  - id: api_method
+    name: "API Method"
+    name_ru: "Метод API"
+    metamodel_level: component_details
+    category: integration
+    description: >-
+      Конкретная операция API с указанием HTTP-метода, endpoint и
+      назначением, обеспечивающая вызовы внешних/внутренних систем.
+    attributes:
+      - id: api_method.http_method
+        name: "HTTP-метод"
+        metamodel_level: component_details
+        description: "GET, POST и т.д."
+      - id: api_method.endpoint
+        name: "Endpoint"
+        metamodel_level: component_details
+        description: "URI или маршрут метода."
+      - id: api_method.api_id
+        name: "API"
+        metamodel_level: solution_details
+        description: "Родительское API."
+
+  - id: api_method_parameter
+    name: "API Method Parameter"
+    name_ru: "Параметр метода API"
+    metamodel_level: component_details
+    category: integration
+    description: >-
+      Входной или выходной параметр метода API, определяющий тип,
+      назначение и обязательность данных.
+    attributes:
+      - id: api_method_parameter.type
+        name: "Тип"
+        metamodel_level: component_details
+        description: "Query, header, body и т.п."
+      - id: api_method_parameter.description
+        name: "Описание"
+        metamodel_level: component_details
+        description: "Назначение параметра."
+      - id: api_method_parameter.api_method_id
+        name: "Метод"
+        metamodel_level: component_details
+        description: "Метод API, которому принадлежит параметр."
+
+  - id: information_flow
+    name: "Information Flow"
+    name_ru: "Поток информации"
+    metamodel_level: solution_details
+    category: integration
+    description: >-
+      Логическое представление обмена данными между системами,
+      бизнес-объектами или компонентами.
+    attributes:
+      - id: information_flow.business_object_id
+        name: "Бизнес-объект"
+        metamodel_level: data_details
+        description: "Что передаётся в потоке."
+
+  - id: it_system
+    name: "IT System"
+    name_ru: "ИТ-система"
+    metamodel_level: solution_details
+    category: application
+    description: >-
+      Прикладное решение или платформа, обеспечивающая поддержку
+      бизнес-процессов и владеющая компонентами/подсистемами.
+    attributes:
+      - id: it_system.org_unit_id
+        name: "Орг. единица"
+        metamodel_level: strategic_view
+        description: "Подразделение, ответственное за систему."
+      - id: it_system.business_capability_id
+        name: "Способность"
+        metamodel_level: strategic_view
+        description: "Бизнес-способность, которую поддерживает система."
+      - id: it_system.business_domain_id
+        name: "Бизнес-домен"
+        metamodel_level: strategic_view
+        description: "Домены, которые покрывает система."
+      - id: it_system.tier
+        name: "Tier"
+        metamodel_level: solution_details
+        description: "Критичность системы."
+
+  - id: functional_subsystem
+    name: "Functional Subsystem"
+    name_ru: "Функциональная подсистема"
+    metamodel_level: solution_details
+    category: application
+    description: >-
+      Логическая часть ИТ-системы, объединяющая набор компонентов для
+      реализации конкретных функций.
+    attributes:
+      - id: functional_subsystem.it_system_id
+        name: "ИТ-система"
+        metamodel_level: solution_details
+        description: "Родительская система."
+      - id: functional_subsystem.tier
+        name: "Tier"
+        metamodel_level: solution_details
+        description: "Критичность подсистемы."
+
+  - id: component
+    name: "Component"
+    name_ru: "Компонент"
+    metamodel_level: component_details
+    category: application
+    description: >-
+      Прикладной модуль, сервис, база данных или иная часть подсистемы,
+      выполняющая конкретную функцию.
+    attributes:
+      - id: component.type
+        name: "Тип компонента"
+        metamodel_level: component_details
+        description: "Микросервис, БД, UI и т.д."
+      - id: component.functional_subsystem_id
+        name: "Подсистема"
+        metamodel_level: solution_details
+        description: "К какой подсистеме относится компонент."
+
+  - id: integration
+    name: "Integration"
+    name_ru: "Интеграция"
+    metamodel_level: solution_details
+    category: integration
+    description: >-
+      Связь между компонентами или системами, обеспечивающая обмен данными
+      через API, очереди или прямые коннекторы.
+    attributes:
+      - id: integration.component_id
+        name: "Компонент"
+        metamodel_level: component_details
+        description: "Компонент, где реализована интеграция."
+      - id: integration.tier
+        name: "Критичность"
+        metamodel_level: solution_details
+        description: "Важность интеграции."
+
+  - id: system_log
+    name: "System Log"
+    name_ru: "Системный лог"
+    metamodel_level: component_details
+    category: observability
+    description: >-
+      Запись журнала приложения или компонента с уровнем, контекстом,
+      stack trace и пользовательскими метаданными.
+    attributes:
+      - id: system_log.source_id
+        name: "Источник"
+        metamodel_level: component_details
+        description: "Компонент или система, сформировавшая лог."
+      - id: system_log.log_level
+        name: "Уровень"
+        metamodel_level: component_details
+        description: "ERROR, WARN, INFO."
+      - id: system_log.log_message
+        name: "Сообщение"
+        metamodel_level: component_details
+        description: "Текст записи."
+      - id: system_log.timestamp
+        name: "Время"
+        metamodel_level: solution_details
+        description: "Когда зафиксирован лог."
+      - id: system_log.log_context
+        name: "Контекст"
+        metamodel_level: component_details
+        description: "Доп. данные об операции."
+      - id: system_log.stack_trace
+        name: "Stack trace"
+        metamodel_level: component_details
+        description: "Трассировка ошибки (если есть)."
+      - id: system_log.performance_metrics
+        name: "Показатели производительности"
+        metamodel_level: component_details
+        description: "Latency, payload size и т.п."
+      - id: system_log.user_id
+        name: "Пользователь"
+        metamodel_level: business_details
+        description: "Кто инициировал операцию."
+      - id: system_log.operation
+        name: "Операция"
+        metamodel_level: component_details
+        description: "Имя бизнес-операции."
+      - id: system_log.duration_ms
+        name: "Длительность"
+        metamodel_level: component_details
+        description: "Время выполнения операции."
+
+  - id: code_repository
+    name: "Code Repository"
+    name_ru: "Репозиторий кода"
+    metamodel_level: component_details
+    category: tooling
+    description: >-
+      Репозиторий исходного кода с метаданными об owner-команде,
+      типе VCS и настройках CI/CD.
+    attributes:
+      - id: code_repository.repo_url
+        name: "URL"
+        metamodel_level: component_details
+        description: "Ссылка на репозиторий."
+      - id: code_repository.repo_type
+        name: "Тип репозитория"
+        metamodel_level: component_details
+        description: "GIT, SVN и т.д."
+      - id: code_repository.default_branch
+        name: "Базовая ветка"
+        metamodel_level: component_details
+        description: "Основная ветка разработки."
+      - id: code_repository.last_commit_hash
+        name: "Последний коммит"
+        metamodel_level: component_details
+        description: "Хеш последнего коммита."
+      - id: code_repository.last_commit_date
+        name: "Дата коммита"
+        metamodel_level: component_details
+        description: "Когда обновлялся репозиторий."
+      - id: code_repository.last_commit_author
+        name: "Автор коммита"
+        metamodel_level: business_details
+        description: "Ответственный разработчик."
+      - id: code_repository.documentation_url
+        name: "Документация"
+        metamodel_level: component_details
+        description: "Ссылка на документацию."
+      - id: code_repository.ci_cd_pipeline_url
+        name: "CI/CD"
+        metamodel_level: solution_details
+        description: "Ссылка на пайплайн сборки/деплоя."
+      - id: code_repository.owner_team_id
+        name: "Команда-владелец"
+        metamodel_level: business_details
+        description: "Кто поддерживает репозиторий."
+      - id: code_repository.build_config
+        name: "Сборка"
+        metamodel_level: component_details
+        description: "Параметры сборки."
+      - id: code_repository.deployment_config
+        name: "Деплой"
+        metamodel_level: solution_details
+        description: "Настройки развёртывания."
 
   - id: data_contract
     name: "Data Contract"
@@ -480,6 +1349,14 @@ entity_kinds:
         metamodel_level: business_details
         description: "Соглашение об уровне сервиса (доступность, актуальность, время
           реакции)."
+      - id: data_contract.status
+        name: "Статус контракта"
+        metamodel_level: data_details
+        description: "DRAFT, ACTIVE, DEPRECATED и т.п."
+      - id: data_contract.version
+        name: "Версия"
+        metamodel_level: data_details
+        description: "Номер ревизии контракта."
 
   - id: contract_requirement
     name: "Contract Requirement"
@@ -492,6 +1369,41 @@ entity_kinds:
     rules: |-
       - Каждое требование привязано к одной или нескольким метрикам.
       - Формулируется однозначно и может быть проверено автоматически.
+    attributes:
+      - id: contract_requirement.requirement_type
+        name: "Тип требования"
+        metamodel_level: data_details
+        description: "Категория (формат, SLA, качество и т.д.)."
+      - id: contract_requirement.business_context
+        name: "Бизнес-контекст"
+        metamodel_level: business_details
+        description: "Какой процесс/ценность обосновывает требование."
+      - id: contract_requirement.regulatory_references
+        name: "Регуляторные ссылки"
+        metamodel_level: business_details
+        description: "Нормативы или стандарты, на которые опирается требование."
+
+  - id: data_object
+    name: "Data Object"
+    name_ru: "Объект данных"
+    metamodel_level: data_details
+    category: business_object
+    description: >-
+      Логическая сущность данных внутри дата-продукта, объединяющая набор
+      бизнес-атрибутов и представляющая конкретный аспект бизнес-сущности.
+    attributes:
+      - id: data_object.description
+        name: "Описание"
+        metamodel_level: data_details
+        description: "Краткое назначение объекта."
+      - id: data_object.business_entity_id
+        name: "Бизнес-сущность"
+        metamodel_level: data_details
+        description: "С какой бизнес-сущностью связан объект."
+      - id: data_object.owner_id
+        name: "Владелец"
+        metamodel_level: business_details
+        description: "Ответственный за содержание объекта."
 
   - id: data_quality_check
     name: "Data Quality Check"
@@ -505,6 +1417,43 @@ entity_kinds:
       - Содержит исполняемую логику (SQL/конфигурация).
       - Имеет расписание и настройки уведомлений.
       - Результаты исполнения фиксируются и отслеживаются.
+    attributes:
+      - id: data_quality_check.contract_requirement_id
+        name: "Требование контракта"
+        metamodel_level: data_details
+        description: "Какое требование проверяется."
+      - id: data_quality_check.sql_script
+        name: "SQL/скрипт"
+        metamodel_level: component_details
+        description: "Исполняемая логика проверки."
+      - id: data_quality_check.validation_rules
+        name: "Правила валидации"
+        metamodel_level: data_details
+        description: "Конфигурация условий прохождения."
+      - id: data_quality_check.error_threshold
+        name: "Порог ошибки"
+        metamodel_level: data_details
+        description: "Лимит, при превышении которого фиксируется ошибка."
+      - id: data_quality_check.warning_threshold
+        name: "Порог предупреждения"
+        metamodel_level: data_details
+        description: "Допустимое отклонение до статуса WARNING."
+      - id: data_quality_check.schedule
+        name: "Расписание"
+        metamodel_level: solution_details
+        description: "Периодичность выполнения проверки."
+      - id: data_quality_check.status
+        name: "Статус"
+        metamodel_level: data_details
+        description: "ACTIVE/INACTIVE."
+      - id: data_quality_check.owner_id
+        name: "Ответственный"
+        metamodel_level: business_details
+        description: "Роль или пользователь, поддерживающий проверку."
+      - id: data_quality_check.notification_rules
+        name: "Уведомления"
+        metamodel_level: solution_details
+        description: "Каналы и условия оповещений."
 
   - id: sla
     name: "SLA"
@@ -517,6 +1466,62 @@ entity_kinds:
     rules: |-
       - Привязано к дата-контракту и команде-провайдеру.
 
+  - id: requirement_metric_link
+    name: "Requirement Metric Link"
+    name_ru: "Связь требования и метрики"
+    metamodel_level: business_details
+    category: contract
+    description: >-
+      Промежуточная сущность, фиксирующая, какой метрикой измеряется
+      конкретное требование контракта и насколько оно критично.
+    attributes:
+      - id: requirement_metric_link.metric_id
+        name: "Метрика"
+        metamodel_level: business_details
+        description: "Идентификатор метрики, подтверждающей требование."
+      - id: requirement_metric_link.requirement_type
+        name: "Тип требования"
+        metamodel_level: data_details
+        description: "SLA или DQ_CHECK."
+      - id: requirement_metric_link.contract_requirement_id
+        name: "Требование"
+        metamodel_level: data_details
+        description: "Контрактное требование, с которым связана метрика."
+      - id: requirement_metric_link.is_critical
+        name: "Критичность"
+        metamodel_level: business_details
+        description: "Признак блокирующего требования."
+
+  - id: dq_check_execution
+    name: "DQ Check Execution"
+    name_ru: "Запуск DQ-проверки"
+    metamodel_level: component_details
+    category: data_quality
+    description: >-
+      Результат выполнения конкретной проверки качества данных со статусом,
+      временем запуска и подробностями нарушения.
+    attributes:
+      - id: dq_check_execution.data_quality_check_id
+        name: "Проверка"
+        metamodel_level: component_details
+        description: "Какая проверка выполнялась."
+      - id: dq_check_execution.execution_ts
+        name: "Время выполнения"
+        metamodel_level: solution_details
+        description: "Timestamp запуска."
+      - id: dq_check_execution.status
+        name: "Статус"
+        metamodel_level: component_details
+        description: "SUCCESS, WARNING, ERROR."
+      - id: dq_check_execution.error_message
+        name: "Сообщение об ошибке"
+        metamodel_level: component_details
+        description: "Текст ошибки при провале проверки."
+      - id: dq_check_execution.check_results
+        name: "Результаты"
+        metamodel_level: component_details
+        description: "Детали подсчётов и метрик."
+
   - id: incident
     name: "Incident"
     name_ru: "Инцидент"
@@ -528,6 +1533,106 @@ entity_kinds:
     rules: |-
       - Имеет серьёзность и статус обработки.
       - Связывается с затронутыми компонентами и дата-продуктами.
+    attributes:
+      - id: incident.title
+        name: "Название"
+        metamodel_level: solution_details
+        description: "Краткое описание инцидента."
+      - id: incident.severity
+        name: "Серьёзность"
+        metamodel_level: solution_details
+        description: "Классификация влияния."
+      - id: incident.status
+        name: "Статус"
+        metamodel_level: solution_details
+        description: "Этап обработки инцидента."
+      - id: incident.data_product_id
+        name: "Дата-продукт"
+        metamodel_level: data_details
+        description: "Какой продукт затронут."
+      - id: incident.dq_check_id
+        name: "DQ-проверка"
+        metamodel_level: component_details
+        description: "Проверка, вызвавшая инцидент."
+      - id: incident.pipeline_run_id
+        name: "Запуск пайплайна"
+        metamodel_level: solution_details
+        description: "Запуск, к которому относится инцидент."
+
+  - id: metric
+    name: "Metric"
+    name_ru: "Метрика"
+    metamodel_level: strategic_view
+    category: metric
+    description: >-
+      Стандартизованный показатель (бизнесовый, технический, SLA),
+      который используется для оценки процессов, качества данных
+      или производительности.
+    attributes:
+      - id: metric.metric_type
+        name: "Тип метрики"
+        metamodel_level: strategic_view
+        description: "BUSINESS, TECHNICAL, QUALITY, PERFORMANCE, SLA."
+      - id: metric.calculation_logic
+        name: "Формула расчёта"
+        metamodel_level: strategic_view
+        description: "Описание алгоритма вычисления."
+      - id: metric.measurement_unit
+        name: "Единица измерения"
+        metamodel_level: strategic_view
+        description: "%, секунды, штуки и т.д."
+      - id: metric.data_source
+        name: "Источник данных"
+        metamodel_level: data_details
+        description: "Откуда берутся значения."
+
+  - id: monitoring_config
+    name: "Monitoring Config"
+    name_ru: "Конфигурация мониторинга"
+    metamodel_level: solution_details
+    category: observability
+    description: >-
+      Настройки мониторинга и наблюдаемости: дашборды, правила алёртов,
+      ссылки на внешние системы.
+    attributes:
+      - id: monitoring_config.grafana_link
+        name: "Grafana/дашборд"
+        metamodel_level: solution_details
+        description: "URL на визуализацию метрик."
+      - id: monitoring_config.alert_rules
+        name: "Правила оповещений"
+        metamodel_level: solution_details
+        description: "Настройки триггеров и каналов."
+
+  - id: data_owner
+    name: "Data Owner"
+    name_ru: "Владелец данных"
+    metamodel_level: business_details
+    category: people
+    description: >-
+      Уполномоченное лицо или орг-единица, отвечающая за качество,
+      доступность и развитие конкретного набора данных или дата-продукта.
+    attributes:
+      - id: data_owner.email
+        name: "Email"
+        metamodel_level: business_details
+        description: "Контакт владельца."
+      - id: data_owner.type
+        name: "Тип владельца"
+        metamodel_level: business_details
+        description: "UNIT или INDIVIDUAL."
+      - id: data_owner.org_unit_id
+        name: "Орг. единица"
+        metamodel_level: business_details
+        description: "Подразделение, которое представляет владелец."
+      - id: data_owner.user_id
+        name: "Пользователь"
+        metamodel_level: business_details
+        description: "Связь с конкретным сотрудником."
+      - id: data_owner.team_id
+        name: "Команда"
+        metamodel_level: business_details
+        description: "Команда, отвечающая за данные."
 
   - id: data_query
     name: "Data Query"
@@ -540,6 +1645,39 @@ entity_kinds:
     rules: |-
       - Фиксирует метаданные запроса (но не сами данные).
       - Используется для аудита и анализа нагрузки.
+    attributes:
+      - id: data_query.user_id
+        name: "Пользователь"
+        metamodel_level: business_details
+        description: "Кто выполнял запрос."
+      - id: data_query.data_product_id
+        name: "Дата-продукт"
+        metamodel_level: data_details
+        description: "Источник данных запроса."
+      - id: data_query.execution_ts
+        name: "Время выполнения"
+        metamodel_level: solution_details
+        description: "Timestamp запуска."
+      - id: data_query.duration_ms
+        name: "Длительность"
+        metamodel_level: solution_details
+        description: "Время исполнения в миллисекундах."
+      - id: data_query.data_source
+        name: "Источник"
+        metamodel_level: solution_details
+        description: "Система, против которой выполнен запрос."
+      - id: data_query.rows_returned
+        name: "Количество строк"
+        metamodel_level: solution_details
+        description: "Результат запроса."
+      - id: data_query.status
+        name: "Статус"
+        metamodel_level: solution_details
+        description: "SUCCESS/FAILED и т.д."
+      - id: data_query.error_message
+        name: "Ошибка"
+        metamodel_level: solution_details
+        description: "Текст ошибки при неуспехе."
 
   - id: access_role
     name: "Access Role"
@@ -552,6 +1690,11 @@ entity_kinds:
     rules: |-
       - Группирует однородные права.
       - Имеет уровень привилегий (чтение/запись/администрирование).
+    attributes:
+      - id: access_role.description
+        name: "Описание роли"
+        metamodel_level: business_details
+        description: "Назначение набора прав."
 
   - id: team_access_profile
     name: "Team Access Profile"
@@ -564,6 +1707,15 @@ entity_kinds:
     rules: |-
       - Связывает команду с набором access-ролей.
       - Упрощает онбординг и управление доступом.
+    attributes:
+      - id: team_access_profile.team_id
+        name: "Команда"
+        metamodel_level: business_details
+        description: "Команда, получающая профиль."
+      - id: team_access_profile.role_id
+        name: "Роль доступа"
+        metamodel_level: business_details
+        description: "Роль, входящая в профиль."
 
   - id: access_policy
     name: "Access Policy"
@@ -575,6 +1727,15 @@ entity_kinds:
       имеет доступ к данным, сервисам или функциям.
     rules: |-
       - Может ссылаться на категории чувствительности, роли и сегменты.
+    attributes:
+      - id: access_policy.sensitive_level_id
+        name: "Категория чувствительности"
+        metamodel_level: business_details
+        description: "Для какого уровня применяется политика."
+      - id: access_policy.role_id
+        name: "Роль доступа"
+        metamodel_level: business_details
+        description: "Какая роль подпадает под политику."
 
   - id: employee_role_link
     name: "Employee Role Link"
@@ -586,6 +1747,15 @@ entity_kinds:
       предоставляющий ему соответствующие права.
     rules: |-
       - Может быть как частью командного профиля, так и прямым назначением.
+    attributes:
+      - id: employee_role_link.user_id
+        name: "Сотрудник"
+        metamodel_level: business_details
+        description: "Кому назначена роль."
+      - id: employee_role_link.role_id
+        name: "Роль"
+        metamodel_level: business_details
+        description: "Какая роль выдана сотруднику."
 
   - id: sensitive_level
     name: "Sensitive Level"
@@ -598,6 +1768,11 @@ entity_kinds:
     rules: |-
       - Определяет обязательные организационные и технические меры защиты.
       - Используется для разметки бизнес-атрибутов, файлов, отчётов и т.п.
+    attributes:
+      - id: sensitive_level.access_policy_id
+        name: "Связанная политика"
+        metamodel_level: business_details
+        description: "Политика, описывающая требования к уровню."
 
 relation_kinds:
   - id: domain_has_value_stream
@@ -759,4 +1934,252 @@ relation_kinds:
     to_kind: sensitive_level
     metamodel_level: data_details
     category: classification
+    direction: directed
+
+  - id: bank_product_in_job_family
+    name: "Bank Product → Job Family"
+    from_kind: bank_product
+    to_kind: job_family
+    metamodel_level: business_details
+    category: assignment
+    direction: directed
+
+  - id: bank_product_targets_segment
+    name: "Bank Product → Customer Segment"
+    from_kind: bank_product
+    to_kind: customer_segment
+    metamodel_level: business_details
+    category: customer
+    direction: directed
+
+  - id: bank_product_provides_value
+    name: "Bank Product → Value"
+    from_kind: bank_product
+    to_kind: value
+    metamodel_level: strategic_view
+    category: value_delivery
+    direction: directed
+
+  - id: bank_product_has_owner
+    name: "Bank Product → Employee"
+    from_kind: bank_product
+    to_kind: employee
+    metamodel_level: business_details
+    category: ownership
+    direction: directed
+
+  - id: value_consumer_uses_channel
+    name: "Value Consumer → Channel"
+    from_kind: value_consumer
+    to_kind: channel
+    metamodel_level: business_details
+    category: interaction
+    direction: directed
+
+  - id: value_consumer_in_segment
+    name: "Value Consumer → Customer Segment"
+    from_kind: value_consumer
+    to_kind: customer_segment
+    metamodel_level: strategic_view
+    category: classification
+    direction: directed
+
+  - id: value_consumer_seeks_value
+    name: "Value Consumer → Value"
+    from_kind: value_consumer
+    to_kind: value
+    metamodel_level: strategic_view
+    category: expectation
+    direction: directed
+
+  - id: value_stream_stage_implements_process
+    name: "Value Stream Stage → Business Process"
+    from_kind: value_stream_stage
+    to_kind: business_process
+    metamodel_level: business_details
+    category: realization
+    direction: directed
+
+  - id: value_stream_stage_requires_capability
+    name: "Value Stream Stage → Business Capability"
+    from_kind: value_stream_stage
+    to_kind: business_capability
+    metamodel_level: strategic_view
+    category: dependency
+    direction: directed
+
+  - id: access_policy_targets_sensitive_level
+    name: "Access Policy → Sensitive Level"
+    from_kind: access_policy
+    to_kind: sensitive_level
+    metamodel_level: business_details
+    category: classification
+    direction: directed
+
+  - id: access_policy_assigns_role
+    name: "Access Policy → Access Role"
+    from_kind: access_policy
+    to_kind: access_role
+    metamodel_level: business_details
+    category: governance
+    direction: directed
+
+  - id: employee_role_link_to_employee
+    name: "Employee Role Link → Employee"
+    from_kind: employee_role_link
+    to_kind: employee
+    metamodel_level: business_details
+    category: access
+    direction: directed
+
+  - id: employee_role_link_to_role
+    name: "Employee Role Link → Access Role"
+    from_kind: employee_role_link
+    to_kind: access_role
+    metamodel_level: business_details
+    category: access
+    direction: directed
+
+  - id: requirement_metric_link_to_metric
+    name: "Requirement Metric Link → Metric"
+    from_kind: requirement_metric_link
+    to_kind: metric
+    metamodel_level: business_details
+    category: measurement
+    direction: directed
+
+  - id: requirement_metric_link_to_requirement
+    name: "Requirement Metric Link → Contract Requirement"
+    from_kind: requirement_metric_link
+    to_kind: contract_requirement
+    metamodel_level: data_details
+    category: verification
+    direction: directed
+
+  - id: dq_check_has_execution
+    name: "Data Quality Check → Execution"
+    from_kind: data_quality_check
+    to_kind: dq_check_execution
+    metamodel_level: component_details
+    category: lifecycle
+    direction: directed
+
+  - id: data_product_has_data_owner
+    name: "Data Product → Data Owner"
+    from_kind: data_product
+    to_kind: data_owner
+    metamodel_level: business_details
+    category: ownership
+    direction: directed
+
+  - id: data_table_on_logical_resource
+    name: "Data Table → Logical Resource"
+    from_kind: data_table
+    to_kind: logical_resource
+    metamodel_level: solution_details
+    category: deployment
+    direction: directed
+
+  - id: topic_on_logical_resource
+    name: "Topic → Logical Resource"
+    from_kind: topic
+    to_kind: logical_resource
+    metamodel_level: solution_details
+    category: deployment
+    direction: directed
+
+  - id: data_object_link_source_product
+    name: "Data Object Link → Source Data Product"
+    from_kind: data_object_link
+    to_kind: data_product
+    metamodel_level: data_details
+    category: lineage
+    direction: directed
+
+  - id: data_object_link_target_product
+    name: "Data Object Link → Target Data Product"
+    from_kind: data_object_link
+    to_kind: data_product
+    metamodel_level: data_details
+    category: lineage
+    direction: directed
+
+  - id: data_product_link_pipeline
+    name: "Data Product Link → Data Pipeline"
+    from_kind: data_product_link
+    to_kind: data_pipeline
+    metamodel_level: solution_details
+    category: implementation
+    direction: directed
+
+  - id: it_system_has_subsystem
+    name: "IT System → Functional Subsystem"
+    from_kind: it_system
+    to_kind: functional_subsystem
+    metamodel_level: solution_details
+    category: composition
+    direction: directed
+
+  - id: subsystem_has_component
+    name: "Functional Subsystem → Component"
+    from_kind: functional_subsystem
+    to_kind: component
+    metamodel_level: component_details
+    category: composition
+    direction: directed
+
+  - id: component_exposes_api
+    name: "Component → API"
+    from_kind: component
+    to_kind: api
+    metamodel_level: solution_details
+    category: interface
+    direction: directed
+
+  - id: api_has_method
+    name: "API → API Method"
+    from_kind: api
+    to_kind: api_method
+    metamodel_level: component_details
+    category: composition
+    direction: directed
+
+  - id: api_method_has_parameter
+    name: "API Method → Parameter"
+    from_kind: api_method
+    to_kind: api_method_parameter
+    metamodel_level: component_details
+    category: composition
+    direction: directed
+
+  - id: component_runs_on_logical_resource
+    name: "Component → Logical Resource"
+    from_kind: component
+    to_kind: logical_resource
+    metamodel_level: solution_details
+    category: deployment
+    direction: directed
+
+  - id: code_repository_owned_by_team
+    name: "Code Repository → Team"
+    from_kind: code_repository
+    to_kind: team
+    metamodel_level: business_details
+    category: ownership
+    direction: directed
+
+  - id: integration_in_component
+    name: "Integration → Component"
+    from_kind: integration
+    to_kind: component
+    metamodel_level: solution_details
+    category: implementation
+    direction: directed
+
+  - id: information_flow_for_business_entity
+    name: "Information Flow → Business Entity"
+    from_kind: information_flow
+    to_kind: business_entity
+    metamodel_level: data_details
+    category: representation
     direction: directed
