@@ -1,0 +1,125 @@
+$schema: "https://json-schema.org/draft/2020-12/schema"
+title: "Metamodel YAML"
+type: object
+required: [meta, dictionaries, entity_kinds, relation_kinds]
+additionalProperties: false
+properties:
+  meta:
+    type: object
+    required: [version, bank_code, model_name, last_updated]
+    additionalProperties: true
+    properties:
+      version:
+        type: integer
+        minimum: 1
+      bank_code:
+        type: string
+        minLength: 1
+      model_name:
+        type: string
+        minLength: 1
+      last_updated:
+        type: string
+        format: date
+  dictionaries:
+    type: object
+    additionalProperties:
+      type: array
+      items:
+        $ref: '#/$defs/dictionary_item'
+  entity_kinds:
+    type: array
+    minItems: 1
+    items:
+      $ref: '#/$defs/entity_kind'
+  relation_kinds:
+    type: array
+    minItems: 1
+    items:
+      $ref: '#/$defs/relation_kind'
+$defs:
+  metamodel_level_enum:
+    type: string
+    enum:
+      - strategic_view
+      - business_details
+      - data_details
+      - solution_details
+      - component_details
+      - infrastructure_details
+  dictionary_item:
+    type: object
+    required: [id, name]
+    additionalProperties: true
+    properties:
+      id:
+        type: string
+        pattern: '^[a-z0-9_]+$'
+      name:
+        type: string
+  attribute:
+    type: object
+    required: [id, name, metamodel_level]
+    additionalProperties: true
+    properties:
+      id:
+        type: string
+        pattern: '^[a-z0-9_.]+$'
+      name:
+        type: string
+      metamodel_level:
+        $ref: '#/$defs/metamodel_level_enum'
+      description:
+        type: string
+      properties:
+        type: object
+        additionalProperties: true
+  entity_kind:
+    type: object
+    required: [id, name, metamodel_level, category]
+    additionalProperties: true
+    properties:
+      id:
+        type: string
+        pattern: '^[a-z0-9_]+$'
+      name:
+        type: string
+      name_ru:
+        type: string
+      metamodel_level:
+        $ref: '#/$defs/metamodel_level_enum'
+      category:
+        type: string
+      description:
+        type: string
+      rules:
+        type: string
+      attributes:
+        type: array
+        items:
+          $ref: '#/$defs/attribute'
+  relation_kind:
+    type: object
+    required: [id, name, from_kind, to_kind, metamodel_level, category, direction]
+    additionalProperties: true
+    properties:
+      id:
+        type: string
+        pattern: '^[a-z0-9_]+$'
+      name:
+        type: string
+      from_kind:
+        type: string
+      to_kind:
+        type: string
+      metamodel_level:
+        $ref: '#/$defs/metamodel_level_enum'
+      category:
+        type: string
+      direction:
+        type: string
+        enum: [directed, undirected]
+      description:
+        type: string
+      rules:
+        type: string
