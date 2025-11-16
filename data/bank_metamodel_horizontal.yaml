@@ -1,0 +1,576 @@
+meta:
+  version: 1
+  bank_code: "BANK"
+  model_name: "bank_metamodel_horizontal"
+  last_updated: "2025-01-14"
+  locale: "ru-RU"
+  title: "Горизонтальный сценарий: от цели и ценности до компонентов и инфраструктуры"
+  description: >-
+    Связка стратегических объектов (цели, ценность) с бизнес-способностями и
+    процессами, далее с ИТ-системами, компонентами, API и логическими /
+    инфраструктурными ресурсами.
+  scenario_version: "0.1"
+
+dictionaries:
+  metamodel_levels:
+    - id: strategic_view
+      name: "Strategic view"
+    - id: business_details
+      name: "Business details"
+    - id: solution_details
+      name: "Solution details"
+    - id: component_details
+      name: "Component details"
+    - id: infrastructure_details
+      name: "Infrastructure details"
+  relationship_archetypes:
+    - id: aggregates
+      name: "Агрегирует"
+      description: "Source агрегирует набор target-объектов."
+    - id: composition
+      name: "Состоит из"
+      description: "Жёсткая часть-целое, жизненный цикл части зависит от целого."
+    - id: association
+      name: "Ассоциируется"
+      description: "Семантическая связь без явного владения."
+    - id: master_association
+      name: "Ассоциируется (мастер-система)"
+      description: "IT-система – мастер для бизнес-сущности или другого объекта."
+    - id: serves
+      name: "Обслуживает"
+      description: "Source обслуживает или изменяет состояние target."
+    - id: realizes
+      name: "Реализует"
+      description: "Source реализует/имплементирует поведение или контракт target."
+    - id: produces
+      name: "Производит"
+      description: "Source производит/создаёт значение target."
+    - id: consumes
+      name: "Потребляет"
+      description: "Source потребляет значение target."
+    - id: supports
+      name: "Поддерживает"
+      description: "Организационная или техническая поддержка target."
+    - id: needed_for_goal
+      name: "Необходима для достижения цели"
+      description: "Способность или поток необходимы для достижения цели."
+    - id: sold_within
+      name: "Продается в рамках"
+      description: "Ценность продаётся в рамках продукта."
+    - id: achieves
+      name: "Достигает"
+      description: "Организация достигает стратегическую цель."
+    - id: contacts_via
+      name: "Контактирует посредством"
+      description: "Актор контактирует с банком через канал."
+    - id: flows_over
+      name: "Передает по потоку"
+      description: "Информационный поток транспортирует бизнес-сущности."
+
+entity_kinds:
+  - id: goal
+    name: "Goal"
+    name_ru: "Цель"
+    metamodel_level: strategic_view
+    category: goal
+    description: "Стратегическая бизнес-цель банка."
+
+  - id: job_family
+    name: "Job Family"
+    name_ru: "Job Family"
+    metamodel_level: strategic_view
+    category: business_structure
+    description: "Группа ролей/должностей, в рамках которой продаются продукты банка."
+
+  - id: bank_product
+    name: "Bank Product"
+    name_ru: "Продукт Банка"
+    metamodel_level: strategic_view
+    category: offering
+    description: "Коммерческий продукт/предложение банка, через который продается ценность."
+
+  - id: organizational_unit
+    name: "Organizational Unit"
+    name_ru: "Организационная единица"
+    metamodel_level: strategic_view
+    category: business_structure
+    description: "Подразделение банка, создающее продукты и ответственное за системы и способности."
+
+  - id: value
+    name: "Value"
+    name_ru: "Ценность"
+    metamodel_level: business_details
+    category: value_definition
+    description: "Ценностное предложение для клиента, которое создается и продается банком."
+
+  - id: value_consumer
+    name: "Value Consumer"
+    name_ru: "Потребитель ценности"
+    metamodel_level: business_details
+    category: stakeholder
+    description: "Клиент или иной актор, который потребляет создаваемую банком ценность."
+
+  - id: channel
+    name: "Channel"
+    name_ru: "Канал"
+    metamodel_level: business_details
+    category: channel
+    description: "Канал взаимодействия, обеспечивающий контакт с клиентом и доставку ценности."
+
+  - id: value_stream
+    name: "Value Stream"
+    name_ru: "Поток создания ценности"
+    metamodel_level: business_details
+    category: value_delivery
+    description: "Сквозной поток действий, в результате которых создаётся ценность для клиента."
+
+  - id: value_stream_stage
+    name: "Value Stream Stage"
+    name_ru: "Стадия потока"
+    metamodel_level: business_details
+    category: value_delivery
+    description: "Логический шаг/этап внутри value stream."
+
+  - id: business_capability
+    name: "Business Capability"
+    name_ru: "Бизнес-способность"
+    metamodel_level: business_details
+    category: capability
+    description: "Устойчивое умение организации выполнять набор действий и сервисов."
+
+  - id: business_process
+    name: "Business Process"
+    name_ru: "Бизнес-процесс"
+    metamodel_level: business_details
+    category: process
+    description: "Процесс, который реализует стадии потока и изменяет состояние бизнес-сущностей."
+
+  - id: business_function
+    name: "Business Function"
+    name_ru: "Бизнес-функция"
+    metamodel_level: business_details
+    category: process
+    description: "Шаг/функция внутри бизнес-процесса."
+
+  - id: business_entity
+    name: "Business Entity"
+    name_ru: "Бизнес-сущность"
+    metamodel_level: business_details
+    category: business_object
+    description: "Ключевой бизнес-объект, состояние которого изменяют процессы."
+
+  - id: information_flow
+    name: "Information Flow"
+    name_ru: "Информационный поток"
+    metamodel_level: solution_details
+    category: integration
+    description: "Логический поток данных между системами, являющийся источником или потребителем бизнес-сущностей."
+
+  - id: it_system
+    name: "IT System"
+    name_ru: "ИТ-система"
+    metamodel_level: solution_details
+    category: application
+    description: "Прикладная система банка (мастер-система для части бизнес-сущностей)."
+
+  - id: functional_subsystem
+    name: "Functional Subsystem"
+    name_ru: "Функциональная подсистема"
+    metamodel_level: solution_details
+    category: application
+    description: "Функциональный блок внутри ИТ-системы."
+
+  - id: component
+    name: "Component"
+    name_ru: "Компонент"
+    metamodel_level: component_details
+    category: application
+    description: "Логический компонент приложения, реализующий часть функциональности."
+
+  - id: vendor_product
+    name: "Vendor Product"
+    name_ru: "Вендорский продукт"
+    metamodel_level: component_details
+    category: vendor_solution
+    description: "Поставляемый вендором программный продукт, на базе которого реализуется компонент."
+
+  - id: software_component
+    name: "Software Component"
+    name_ru: "Компонент ПО"
+    metamodel_level: component_details
+    category: application
+    description: "Конкретная реализация компонента в коде или артефакте поставки."
+
+  - id: api
+    name: "API"
+    name_ru: "API"
+    metamodel_level: component_details
+    category: interface
+    description: "Программный интерфейс компонента, предоставляющий операции наружу."
+
+  - id: api_method
+    name: "API Method"
+    name_ru: "Метод API"
+    metamodel_level: component_details
+    category: interface
+    description: "Конкретная операция/эндпоинт API."
+
+  - id: api_method_parameter
+    name: "API Method Parameter"
+    name_ru: "Параметр метода API"
+    metamodel_level: component_details
+    category: interface
+    description: "Параметр или поле запроса/ответа метода API."
+
+  - id: integration
+    name: "Integration"
+    name_ru: "Интеграция"
+    metamodel_level: component_details
+    category: integration
+    description: "Интеграционное взаимодействие, использующее методы API и логические ресурсы."
+
+  - id: logical_resource
+    name: "Logical Resource"
+    name_ru: "Логический ресурс"
+    metamodel_level: infrastructure_details
+    category: infrastructure
+    description: "Логический ресурс хранения или обмена (DB, Namespace, Bucket, Topic, Queue)."
+    attributes:
+      - id: logical_resource.resource_kind
+        name: "Тип ресурса"
+        metamodel_level: infrastructure_details
+        description: "DB, Namespace, Bucket, Topic или Queue."
+        properties:
+          allowed_values: ["DB", "Namespace", "Bucket", "Topic", "Queue"]
+
+  - id: infra_resource
+    name: "Infrastructure Resource"
+    name_ru: "Инфраструктурный ресурс"
+    metamodel_level: infrastructure_details
+    category: infrastructure
+    description: "Физический/виртуальный инфраструктурный ресурс или стенд, обслуживающий логические ресурсы и компоненты."
+
+relation_kinds:
+  - id: rel_job_family_aggregates_product
+    name: "Job Family агрегирует Bank Product"
+    from_kind: job_family
+    to_kind: bank_product
+    metamodel_level: strategic_view
+    category: aggregation
+    direction: directed
+    description: "Job Family агрегирует набор банковских продуктов."
+
+  - id: rel_value_sold_within_product
+    name: "Value продаётся в рамках Bank Product"
+    from_kind: value
+    to_kind: bank_product
+    metamodel_level: business_details
+    category: value_delivery
+    direction: directed
+    description: "Ценность продаётся в рамках конкретного банковского продукта."
+
+  - id: rel_org_unit_creates_product
+    name: "Org Unit создаёт Bank Product"
+    from_kind: organizational_unit
+    to_kind: bank_product
+    metamodel_level: strategic_view
+    category: production
+    direction: directed
+    description: "Орг. единица производит и развивает банковский продукт."
+
+  - id: rel_org_unit_achieves_goal
+    name: "Org Unit достигает Goal"
+    from_kind: organizational_unit
+    to_kind: goal
+    metamodel_level: strategic_view
+    category: achievement
+    direction: directed
+    description: "Орг. единица отвечает за достижение цели."
+
+  - id: rel_value_associated_with_goal
+    name: "Value ассоциируется с Goal"
+    from_kind: value
+    to_kind: goal
+    metamodel_level: business_details
+    category: association
+    direction: directed
+    description: "Ценность может быть связана со стратегической целью."
+
+  - id: rel_capability_needed_for_goal
+    name: "Capability необходима для Goal"
+    from_kind: business_capability
+    to_kind: goal
+    metamodel_level: business_details
+    category: dependency
+    direction: directed
+    description: "Способность требуется для достижения цели."
+
+  - id: rel_consumer_contacts_via_channel
+    name: "Consumer контактирует через Channel"
+    from_kind: value_consumer
+    to_kind: channel
+    metamodel_level: business_details
+    category: interaction
+    direction: directed
+    description: "Потребитель взаимодействует с банком через канал."
+
+  - id: rel_consumer_consumes_value
+    name: "Consumer потребляет Value"
+    from_kind: value_consumer
+    to_kind: value
+    metamodel_level: business_details
+    category: consumption
+    direction: directed
+    description: "Потребитель использует созданную ценность."
+
+  - id: rel_channel_serves_value
+    name: "Channel обслуживает Value"
+    from_kind: channel
+    to_kind: value
+    metamodel_level: business_details
+    category: service
+    direction: directed
+    description: "Канал доставляет ценность клиенту."
+
+  - id: rel_value_stream_produces_value
+    name: "Value Stream производит Value"
+    from_kind: value_stream
+    to_kind: value
+    metamodel_level: business_details
+    category: production
+    direction: directed
+    description: "Поток создания ценности даёт результат для клиента."
+
+  - id: rel_value_stream_aggregates_stages
+    name: "Value Stream агрегирует стадии"
+    from_kind: value_stream
+    to_kind: value_stream_stage
+    metamodel_level: business_details
+    category: aggregation
+    direction: directed
+    description: "Поток состоит из последовательных стадий."
+
+  - id: rel_value_stream_composed_of_products
+    name: "Value Stream состоит из продуктов"
+    from_kind: value_stream
+    to_kind: bank_product
+    metamodel_level: business_details
+    category: composition
+    direction: directed
+    description: "Поток реализуется через набор банковских продуктов."
+
+  - id: rel_process_realizes_stage
+    name: "Process реализует стадию"
+    from_kind: business_process
+    to_kind: value_stream_stage
+    metamodel_level: business_details
+    category: realization
+    direction: directed
+    description: "Бизнес-процесс обеспечивает выполнение стадии потока."
+
+  - id: rel_process_serves_entity
+    name: "Process обслуживает сущность"
+    from_kind: business_process
+    to_kind: business_entity
+    metamodel_level: business_details
+    category: service
+    direction: directed
+    description: "Процесс изменяет состояние бизнес-сущности."
+
+  - id: rel_process_uses_function
+    name: "Process использует Function"
+    from_kind: business_process
+    to_kind: business_function
+    metamodel_level: business_details
+    category: association
+    direction: directed
+    description: "Процесс включает набор бизнес-функций."
+
+  - id: rel_capability_aggregates_processes
+    name: "Capability агрегирует процессы"
+    from_kind: business_capability
+    to_kind: business_process
+    metamodel_level: business_details
+    category: aggregation
+    direction: directed
+    description: "Способность включает связанные бизнес-процессы."
+
+  - id: rel_capability_serves_value_stream
+    name: "Capability поддерживает Value Stream"
+    from_kind: business_capability
+    to_kind: value_stream
+    metamodel_level: business_details
+    category: service
+    direction: directed
+    description: "Способность поддерживает поток создания ценности."
+
+  - id: rel_org_unit_supports_capability
+    name: "Org Unit поддерживает Capability"
+    from_kind: organizational_unit
+    to_kind: business_capability
+    metamodel_level: strategic_view
+    category: support
+    direction: directed
+    description: "Подразделение обеспечивает работу бизнес-способности."
+
+  - id: rel_info_flow_serves_entity
+    name: "Information Flow передаёт сущность"
+    from_kind: information_flow
+    to_kind: business_entity
+    metamodel_level: solution_details
+    category: flow
+    direction: directed
+    description: "Информационный поток транспортирует данные о сущности."
+
+  - id: rel_it_system_master_for_entity
+    name: "IT System мастер для сущности"
+    from_kind: it_system
+    to_kind: business_entity
+    metamodel_level: solution_details
+    category: mastership
+    direction: directed
+    description: "ИТ-система является мастер-системой бизнес-сущности."
+
+  - id: rel_it_system_serves_info_flow
+    name: "IT System обслуживает информационный поток"
+    from_kind: it_system
+    to_kind: information_flow
+    metamodel_level: solution_details
+    category: service
+    direction: directed
+    description: "Система выступает источником или потребителем потока."
+
+  - id: rel_it_system_realizes_capability
+    name: "IT System реализует Capability"
+    from_kind: it_system
+    to_kind: business_capability
+    metamodel_level: solution_details
+    category: realization
+    direction: directed
+    description: "Система поддерживает выполнение бизнес-способности."
+
+  - id: rel_org_unit_owns_it_system
+    name: "Org Unit отвечает за IT System"
+    from_kind: organizational_unit
+    to_kind: it_system
+    metamodel_level: strategic_view
+    category: ownership
+    direction: directed
+    description: "Подразделение владеет и поддерживает систему."
+
+  - id: rel_subsystem_composed_of_systems
+    name: "Functional Subsystem состоит из IT Systems"
+    from_kind: functional_subsystem
+    to_kind: it_system
+    metamodel_level: solution_details
+    category: composition
+    direction: directed
+    description: "Подсистема агрегирует один или несколько ИТ-систем."
+
+  - id: rel_component_composed_of_subsystems
+    name: "Component состоит из Subsystems"
+    from_kind: component
+    to_kind: functional_subsystem
+    metamodel_level: component_details
+    category: composition
+    direction: directed
+    description: "Компонент опирается на функциональные подсистемы."
+
+  - id: rel_component_realized_by_vendor_product
+    name: "Vendor Product реализует Component"
+    from_kind: vendor_product
+    to_kind: component
+    metamodel_level: component_details
+    category: realization
+    direction: directed
+    description: "Вендорский продукт реализует компонент."
+
+  - id: rel_software_component_composed_of_vendor_product
+    name: "Software Component состоит из Vendor Product"
+    from_kind: software_component
+    to_kind: vendor_product
+    metamodel_level: component_details
+    category: composition
+    direction: directed
+    description: "Компонент ПО построен на вендорском продукте."
+
+  - id: rel_component_exposes_api
+    name: "Component состоит из API"
+    from_kind: component
+    to_kind: api
+    metamodel_level: component_details
+    category: composition
+    direction: directed
+    description: "Компонент предоставляет набор API."
+
+  - id: rel_api_composed_of_methods
+    name: "API состоит из методов"
+    from_kind: api
+    to_kind: api_method
+    metamodel_level: component_details
+    category: composition
+    direction: directed
+    description: "API раскрывает набор методов."
+
+  - id: rel_method_composed_of_params
+    name: "API Method состоит из параметров"
+    from_kind: api_method
+    to_kind: api_method_parameter
+    metamodel_level: component_details
+    category: composition
+    direction: directed
+    description: "Метод включает параметры запроса/ответа."
+
+  - id: rel_integration_uses_methods
+    name: "Integration использует методы API"
+    from_kind: integration
+    to_kind: api_method
+    metamodel_level: component_details
+    category: association
+    direction: directed
+    description: "Интеграция опирается на вызовы методов API."
+
+  - id: rel_integration_realizes_info_flow
+    name: "Integration реализует Information Flow"
+    from_kind: integration
+    to_kind: information_flow
+    metamodel_level: component_details
+    category: realization
+    direction: directed
+    description: "Интеграция воплощает информационный поток."
+
+  - id: rel_logical_resource_serves_component
+    name: "Logical Resource обслуживает Component"
+    from_kind: logical_resource
+    to_kind: component
+    metamodel_level: infrastructure_details
+    category: service
+    direction: directed
+    description: "Логический ресурс обеспечивает работу компонента."
+
+  - id: rel_logical_resource_serves_integration
+    name: "Logical Resource обслуживает Integration"
+    from_kind: logical_resource
+    to_kind: integration
+    metamodel_level: infrastructure_details
+    category: service
+    direction: directed
+    description: "Ресурс поддерживает интеграцию (например, Topic/Queue)."
+
+  - id: rel_infra_resource_serves_logical_resource
+    name: "Infrastructure Resource обслуживает Logical Resource"
+    from_kind: infra_resource
+    to_kind: logical_resource
+    metamodel_level: infrastructure_details
+    category: service
+    direction: directed
+    description: "Физическая инфраструктура размещает логический ресурс."
+
+  - id: rel_infra_resource_serves_software_component
+    name: "Infrastructure Resource обслуживает Software Component"
+    from_kind: infra_resource
+    to_kind: software_component
+    metamodel_level: infrastructure_details
+    category: service
+    direction: directed
+    description: "Инфраструктура размещает компонент ПО."
