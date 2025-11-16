@@ -2,7 +2,7 @@ meta:
   version: 1
   bank_code: "BANK"
   model_name: "enterprise_metamodel"
-  last_updated: "2025-11-18"
+  last_updated: "2025-11-17"
   locale: "ru-RU"
   title: "Горизонтальный сценарий управления Enterprise-моделью"
   description: >-
@@ -1959,6 +1959,42 @@ relation_kinds:
     metamodel_level: business_details
     category: assignment
     direction: directed
+
+  - id: job_family_has_bank_product
+    name: "Job Family → Bank Product"
+    from_kind: job_family
+    to_kind: bank_product
+    metamodel_level: business_details
+    category: assignment
+    direction: directed
+    description: "Job Family ведёт портфель банковских продуктов, за которые отвечает."
+
+  - id: job_family_owns_integration
+    name: "Job Family → Integration"
+    from_kind: job_family
+    to_kind: integration
+    metamodel_level: solution_details
+    category: ownership
+    direction: directed
+    description: "Job Family закрепляет ответственных за поддержание интеграций своего продуктового контура."
+
+  - id: job_family_uses_logical_resource
+    name: "Job Family → Logical Resource"
+    from_kind: job_family
+    to_kind: logical_resource
+    metamodel_level: solution_details
+    category: dependency
+    direction: directed
+    description: "Показывает, какими логическими ресурсами (БД, очередями, сервисами) пользуются продукты Job Family."
+
+  - id: job_family_depends_on_infrastructure_resource
+    name: "Job Family → Infrastructure Resource"
+    from_kind: job_family
+    to_kind: infrastructure_resource
+    metamodel_level: infrastructure_details
+    category: dependency
+    direction: directed
+    description: "Подсвечивает инфраструктурные ресурсы, от которых зависит выполнение обязательств Job Family."
 
   - id: bank_product_targets_segment
     name: "Bank Product → Customer Segment"
