@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from pathlib import Path
+from typing import Optional
 
 import pytest
 from rdflib import Graph, Literal, Namespace, URIRef
@@ -20,6 +21,7 @@ def make_options(
     fmt: str = "turtle",
     use_cardinalities: bool = False,
     skos_tags: bool = False,
+    mermaid_output: Optional[Path] = None,
 ) -> CliOptions:
     base_iri = "http://example.com/test/"
     return CliOptions(
@@ -31,6 +33,7 @@ def make_options(
         prefixes={},
         use_cardinalities=use_cardinalities,
         skos_tags=skos_tags,
+        mermaid_output=mermaid_output,
     )
 
 
@@ -42,8 +45,8 @@ def to_graph(serialized: str) -> Graph:
 
 def test_successful_conversion_minimal(fixtures_dir: Path) -> None:
     options = make_options(fixtures_dir / "minimal.yaml")
-    serialized = run(options)
-    graph = to_graph(serialized)
+    result = run(options)
+    graph = to_graph(result.owl_serialization)
 
     ns_base = Namespace(options.base_iri)
     entity_customer = URIRef(f"{ns_base}entity/customer")
@@ -70,7 +73,8 @@ def test_datatype_and_cardinality_mapping(fixtures_dir: Path) -> None:
     options = make_options(
         fixtures_dir / "minimal.yaml", use_cardinalities=True
     )
-    graph = to_graph(run(options))
+    result = run(options)
+    graph = to_graph(result.owl_serialization)
 
     attr_iri = URIRef(f"{options.base_iri}attribute/customer.status")
     entity_iri = URIRef(f"{options.base_iri}entity/customer")
@@ -88,7 +92,8 @@ def test_datatype_and_cardinality_mapping(fixtures_dir: Path) -> None:
 
 def test_enums_levels_and_skos_tags(fixtures_dir: Path) -> None:
     options = make_options(fixtures_dir / "minimal.yaml", skos_tags=True)
-    graph = to_graph(run(options))
+    result = run(options)
+    graph = to_graph(result.owl_serialization)
 
     entity_iri = URIRef(f"{options.base_iri}entity/customer")
     attr_iri = URIRef(f"{options.base_iri}attribute/customer.status")
@@ -111,4 +116,18 @@ def test_serialization_is_deterministic(fixtures_dir: Path) -> None:
     options = make_options(fixtures_dir / "minimal.yaml")
     first = run(options)
     second = run(options)
-    assert first == second
+    assert first.owl_serialization == second.owl_serialization
+
+
+def test_mermaid_diagram_generation(fixtures_dir: Path) -> None:
+    mermaid_path = Path("diagram.mmd")
+    options = make_options(
+        fixtures_dir / "minimal.yaml", mermaid_output=mermaid_path
+    )
+    result = run(options)
+    diagram = result.mermaid_diagram
+    assert diagram is not None
+    assert "graph LR" in diagram
+    assert "entity_customer" in diagram
+    assert "customer_to_account" not in diagram  # edges use labels instead
+    assert "Customer to Account" in diagram
