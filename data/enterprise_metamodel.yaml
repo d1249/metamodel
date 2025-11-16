@@ -1,0 +1,760 @@
+meta:
+  version: 1
+  bank_code: "BANK"
+  model_name: "enterprise_metamodel"
+  last_updated: "2025-11-16"
+  locale: "ru-RU"
+
+dictionaries:
+  metamodel_levels:
+    - id: strategic
+      name: "Стратегический уровень"
+      order: 10
+    - id: business
+      name: "Бизнес-уровень (value streams, процессы, способности)"
+      order: 20
+    - id: data
+      name: "Уровень данных и дата-продуктов"
+      order: 30
+    - id: analytics
+      name: "Аналитика, ML, отчётность"
+      order: 40
+    - id: solution
+      name: "Прикладные ИТ-решения и интеграции"
+      order: 50
+    - id: infrastructure
+      name: "Инфраструктура и платформы"
+      order: 60
+    - id: governance
+      name: "Управление качеством данных и контрактами"
+      order: 70
+    - id: access_security
+      name: "Доступ, безопасность и чувствительность данных"
+      order: 80
+    - id: people_org
+      name: "Организация, люди и роли"
+      order: 90
+
+entity_kinds:
+  - id: job_family
+    name: "Job Family"
+    name_ru: "Job Family (семейство продуктов)"
+    metamodel_level: strategic
+    category: business_structure
+    description: >-
+      Группа продуктовых команд, объединённых общей зоной ответственности
+      и набором продуктов для схожих потребностей клиентского сегмента.
+      Несёт end-to-end ответственность за доставку ценности.
+    rules: |-
+      - Название и смысл задаёт руководитель домена.
+      - Список ведётся в отдельном реестре, изменение — только через руководителя домена.
+      - Обновление состава Job Family не меняет историю уже созданных сущностей.
+
+  - id: value_stream
+    name: "Value Stream"
+    name_ru: "Поток создания ценности"
+    metamodel_level: business
+    category: value_delivery
+    description: >-
+      Сквозная последовательность действий от инициирующего события до
+      результата для потребителя ценности, охватывающая все шаги
+      создания и доставки ценности.
+    rules: |-
+      - Имеет чёткий бизнес-вход и бизнес-выход.
+      - Не привязан к оргструктуре; может пересекать несколько доменов и подразделений.
+      - Для потока задаются стадии (Value Stream Stage) и ключевые бизнес-метрики.
+    attributes:
+      - id: value_stream.goal
+        name: "Цель потока"
+        metamodel_level: business
+        description: "Краткое формулирование результата, который должен получить потребитель."
+      - id: value_stream.owner
+        name: "Ответственный за поток"
+        metamodel_level: business
+        description: "Роль/должность, ответственная за end-to-end результат."
+
+  - id: value
+    name: "Value"
+    name_ru: "Ценность"
+    metamodel_level: business
+    category: value_definition
+    description: >-
+      Полезный и значимый результат, который банк создаёт для потребителя:
+      продукт, услуга, сервис, решение проблемы или достижение цели клиента.
+    rules: |-
+      - Описывает «что получает потребитель», а не внутреннюю активность банка.
+      - Используется как целевой ориентир для потоков создания ценности и продуктов.
+
+  - id: business_capability
+    name: "Business Capability"
+    name_ru: "Бизнес-способность"
+    metamodel_level: business
+    category: capability
+    description: >-
+      Устойчивая, независимая от оргструктуры способность банка выполнять
+      определённый вид деятельности и достигать бизнес-целей, опираясь
+      на людей, процессы, технологии и данные.
+    rules: |-
+      - Фокус на «что умеет делать банк», а не на конкретных действиях.
+      - Может быть задана иерархия бизнес-способностей.
+      - Не зависит напрямую от текущей оргструктуры.
+    attributes:
+      - id: business_capability.maturity_level
+        name: "Уровень зрелости"
+        metamodel_level: business
+        description: "Классификация зрелости способности (например, initial / managed / optimized)."
+
+  - id: business_domain
+    name: "Business Domain"
+    name_ru: "Бизнес-домен"
+    metamodel_level: strategic
+    category: business_structure
+    description: >-
+      Крупная, стратегически значимая область бизнеса, объединяющая
+      связанные способности, продукты и потоки ценности вокруг общих целей.
+    rules: |-
+      - Название отражает устойчивую область бизнеса (существительное).
+      - Может иметь иерархию доменов и поддоменов.
+      - Отражает «что делает бизнес» или «на каком рынке работает», а не оргструктуру.
+    attributes:
+      - id: business_domain.criticality
+        name: "Критичность домена"
+        metamodel_level: strategic
+        description: "Классификация важности домена для банка (Tier1/Tier2/Tier3 и т.п.)."
+
+  - id: customer_segment
+    name: "Customer Segment"
+    name_ru: "Клиентский сегмент"
+    metamodel_level: business
+    category: customer
+    description: >-
+      Группа потребителей ценности (клиентов, партнёров, внутренних
+      стейкхолдеров), объединённых общими характеристиками, потребностями
+      или поведением.
+    rules: |-
+      - Название должно явно идентифицировать группу (Retail, SME, Private и т.п.).
+      - Используется для таргетирования продуктов и потоков ценности.
+
+  - id: channel
+    name: "Channel"
+    name_ru: "Канал взаимодействия"
+    metamodel_level: business
+    category: channel
+    description: >-
+      Точка взаимодействия банка с внешними и внутренними потребителями:
+      цифровые каналы, отделения, контакт-центр и т.п.
+    rules: |-
+      - Служит для описания «через что» доставляется ценность.
+      - Может быть физическим или цифровым каналом.
+
+  - id: business_goal
+    name: "Goal"
+    name_ru: "Цель"
+    metamodel_level: strategic
+    category: goal
+    description: >-
+      Будущий желаемый результат деятельности банка, отражающий интересы
+      стейкхолдеров и направляющий потоки ценности, продукты и инициативы.
+    rules: |-
+      - Формулируется измеримым образом.
+      - Может быть связана с доменом, потоком ценности и продуктом.
+
+  - id: product
+    name: "Product"
+    name_ru: "Продукт"
+    metamodel_level: business
+    category: offering
+    description: >-
+      Оформленное предложение банка (финансовое или нефинансовое),
+      через которое потребитель получает ценность (кредит, вклад, сервис).
+    rules: |-
+      - Имеет продуктовые метрики (доходность, количество пользователей и т.п.).
+      - Имеет целевую аудиторию (клиентские сегменты).
+
+  - id: value_consumer
+    name: "Consumer of Value"
+    name_ru: "Потребитель ценности"
+    metamodel_level: business
+    category: stakeholder
+    description: >-
+      Лицо, группа лиц или организация (внешний или внутренний стейкхолдер),
+      которая получает и использует создаваемую банком ценность.
+    rules: |-
+      - Ведётся как справочник типов потребителей (клиент-заёмщик, госорган и т.д.).
+
+  - id: value_stream_stage
+    name: "Value Stream Stage"
+    name_ru: "Стадия потока создания ценности"
+    metamodel_level: business
+    category: process
+    description: >-
+      Логически выделенный шаг или группа действий внутри потока создания
+      ценности, который преобразует входное состояние в более ценное и приближает
+      процесс к конечному результату.
+    rules: |-
+      - Название — отглагольное существительное («Андеррайтинг заявки» и т.п.).
+      - Не ведётся в отдельном реестре, является частью модели потока.
+      - Соответствует бизнес-процессу самого высокого уровня.
+
+  - id: business_process
+    name: "Business Process"
+    name_ru: "Бизнес-процесс"
+    metamodel_level: business
+    category: process
+    description: >-
+      Упорядоченная последовательность действий внутри банка,
+      направленная на достижение определённого бизнес-результата.
+    rules: |-
+      - Может состоять из одного или нескольких бизнес-функций.
+      - Может пересекать несколько подразделений и ролей.
+
+  - id: business_function
+    name: "Business Function"
+    name_ru: "Бизнес-функция"
+    metamodel_level: business
+    category: process
+    description: >-
+      Неподелимый с точки зрения управления кусок работы в рамках
+      бизнес-процесса, выполняющий конкретную задачу (например, расчёт комиссии).
+    rules: |-
+      - Не может быть разделена на более мелкие функции без потери смысла.
+      - Может быть автоматизированной (есть связанная ИТ-подсистема) или ручной.
+
+  - id: business_entity
+    name: "Business Entity"
+    name_ru: "Бизнес-сущность"
+    metamodel_level: business
+    category: business_object
+    description: >-
+      Идентифицируемая сущность или ресурс, имеющий значение для бизнеса
+      и выступающий носителем информации или ценности (заявка, договор, клиент).
+    rules: |-
+      - Ведётся в отдельном реестре бизнес-объектов.
+      - Название — существительное или прилагательное + существительное.
+    attributes:
+      - id: business_entity.key
+        name: "Бизнес-ключ"
+        metamodel_level: business
+        description: "Идентификатор сущности на уровне бизнес-логики."
+
+  - id: employee
+    name: "Employee"
+    name_ru: "Сотрудник"
+    metamodel_level: people_org
+    category: people
+    description: >-
+      Физическое лицо, состоящее в трудовых отношениях с банком.
+    rules: |-
+      - Может иметь одну основную роль и дополнительные роли.
+      - Может входить в одну или несколько команд.
+
+  - id: team
+    name: "Team"
+    name_ru: "Команда"
+    metamodel_level: people_org
+    category: people
+    description: >-
+      Кросс-функциональное объединение сотрудников, созданное для решения
+      конкретных задач, владения продуктом или сервиса (agile-подход).
+    rules: |-
+      - Команда может существовать независимо от линейной оргструктуры.
+      - Используется при назначении командных профилей доступа.
+
+  - id: data_product
+    name: "Data Product"
+    name_ru: "Дата-продукт"
+    metamodel_level: data
+    category: data_product
+    description: >-
+      Автономный, переиспользуемый набор данных с определённым качеством,
+      метаданными и механизмами доступа, создаваемый для решения
+      конкретных бизнес-задач и дающий измеримую ценность потребителям.
+    rules: |-
+      - Имеет владельца (Data Owner) и статус жизненного цикла.
+      - Связан с бизнес-сущностями, которые представляет.
+      - Может иметь связи с другими дата-продуктами (зависимости, агрегации).
+    attributes:
+      - id: data_product.owner
+        name: "Data Owner"
+        metamodel_level: data
+        description: "Роль/функция, ответственная за качество и эволюцию дата-продукта."
+      - id: data_product.freshness_sla
+        name: "SLA по актуальности"
+        metamodel_level: data
+        description: "Целевой лаг обновления данных."
+      - id: data_product.lifecycle_status
+        name: "Статус жизненного цикла"
+        metamodel_level: data
+        description: "Например: draft / active / deprecated / retired."
+
+  - id: business_attribute
+    name: "Business Attribute"
+    name_ru: "Бизнес-атрибут"
+    metamodel_level: data
+    category: attribute
+    description: >-
+      Характеристика или свойство бизнес-сущности, представляющее собой
+      элементарную единицу информации (поле или метрику), используемую
+      в процессах, отчётности и принятии решений.
+    rules: |-
+      - Ориентирован на бизнес-понимание, а не на физическое поле таблицы.
+      - Может иметь тип, формат, домен значений и чувствительный уровень.
+    attributes:
+      - id: business_attribute.sensitive_level
+        name: "Уровень чувствительности"
+        metamodel_level: access_security
+        description: "Категория чувствительности, определяющая меры защиты."
+
+  - id: business_metric
+    name: "Business Metric"
+    name_ru: "Бизнес-метрика"
+    metamodel_level: analytics
+    category: metric
+    description: >-
+      Количественный показатель, рассчитываемый на основе бизнес-атрибутов,
+      описывающий состояние процессов, продуктов или доменов.
+    rules: |-
+      - Имеет чёткую формулу расчёта и агрегирования.
+      - Может использоваться в целях, SLA и требованиях контрактов.
+
+  - id: feature
+    name: "Feature"
+    name_ru: "Фича (признак)"
+    metamodel_level: analytics
+    category: ml_feature
+    description: >-
+      Преобразованный или агрегированный атрибут, используемый в ML-моделях.
+    rules: |-
+      - Имеет связь с исходными бизнес-атрибутами и дата-продуктом-источником.
+
+  - id: data_table
+    name: "Data Table"
+    name_ru: "Таблица данных"
+    metamodel_level: data
+    category: physical_data
+    description: >-
+      Структурированное хранилище данных (строки/столбцы) в БД или Lake,
+      содержащее реализации бизнес-атрибутов.
+    rules: |-
+      - Может служить источником для одного или нескольких дата-продуктов.
+    attributes:
+      - id: data_table.schema
+        name: "Схема таблицы"
+        metamodel_level: data
+        description: "Структура столбцов, типов данных и ключей."
+
+  - id: file
+    name: "File"
+    name_ru: "Файл"
+    metamodel_level: data
+    category: physical_data
+    description: >-
+      Неструктурированный или слабоструктурированный набор данных,
+      хранящийся как единый объект в файловой или объектной системе.
+    rules: |-
+      - Имеет тип и формат (CSV, PDF, Parquet и т.п.).
+      - Может быть версионирован.
+
+  - id: ml_model
+    name: "ML Model"
+    name_ru: "ML-модель"
+    metamodel_level: analytics
+    category: analytics
+    description: >-
+      Обученный алгоритм машинного обучения, используемый для
+      прогнозирования, классификации или других выводов на основе данных.
+    rules: |-
+      - Имеет тип, версию, метрики качества.
+      - Ссылается на обучающие дата-продукты и наборы признаков.
+
+  - id: report
+    name: "Report"
+    name_ru: "Отчёт"
+    metamodel_level: analytics
+    category: analytics
+    description: >-
+      Формализованное представление данных для конечного потребителя,
+      предоставляющее информацию в структурированном виде для анализа
+      и принятия решений.
+    rules: |-
+      - Имеет регулярность обновления.
+      - Содержит бизнес-ориентированное описание.
+
+  - id: ai_agent
+    name: "AI Agent"
+    name_ru: "AI-агент"
+    metamodel_level: analytics
+    category: analytics
+    description: >-
+      Автономная или полуавтономная программная система, использующая
+      ИИ для выполнения задач, взаимодействия с окружением и достижения целей.
+    rules: |-
+      - Может принимать решения на основе данных и моделей.
+      - Имеет привязку к дата-продуктам и политике доступа.
+
+  - id: notebook
+    name: "Notebook"
+    name_ru: "Ноутбук (анализ)"
+    metamodel_level: analytics
+    category: tooling
+    description: >-
+      Интерактивная среда (например, Jupyter) для разработки кода,
+      анализа данных и экспериментов с алгоритмами.
+    rules: |-
+      - Объединяет код, визуализации и текстовые пояснения.
+      - Не является источником данных, но сильно связан с ними.
+
+  - id: data_pipeline
+    name: "Data Pipeline"
+    name_ru: "Поток загрузки данных"
+    metamodel_level: solution
+    category: integration
+    description: >-
+      Автоматизированный процесс, который перемещает и трансформирует данные
+      между источниками и потребителями (хранилища, дата-продукты, отчёты).
+    rules: |-
+      - Имеет расписание, конфигурацию и целевой набор данных.
+      - Может состоять из нескольких коннекторов и трансформаций.
+
+  - id: connector
+    name: "Connector"
+    name_ru: "Коннектор"
+    metamodel_level: solution
+    category: integration
+    description: >-
+      Компонент, обеспечивающий подключение к источнику или приёмнику данных
+      (БД, очередь, API), абстрагирующий детали протокола.
+    rules: |-
+      - Конфигурируется параметрами подключения, схемой безопасности.
+
+  - id: transformation
+    name: "Transformation"
+    name_ru: "Трансформация"
+    metamodel_level: solution
+    category: integration
+    description: >-
+      Операция или набор операций, изменяющих структуру или содержание данных
+      (фильтрация, агрегация, обогащение и т.п.).
+    rules: |-
+      - Может быть простой или сложной; обычно описывается декларативно.
+
+  - id: data_pipeline_run
+    name: "Data Pipeline Run"
+    name_ru: "Результат запуска потока"
+    metamodel_level: solution
+    category: integration_run
+    description: >-
+      Конкретный экземпляр выполнения потока загрузки данных, содержащий
+      метрики выполнения, статус и временные рамки обработанных данных.
+    rules: |-
+      - Фиксирует метрики (количество записей, длительность, статус).
+      - Используется для мониторинга производительности и инцидентов.
+
+  - id: api
+    name: "API"
+    name_ru: "API"
+    metamodel_level: solution
+    category: integration
+    description: >-
+      Набор правил и протоколов, позволяющий системам взаимодействовать
+      по сети; ориентирован на работу с одной или несколькими бизнес-сущностями.
+    rules: |-
+      - Ведётся в реестре API, публикуется на API-портале.
+      - Как правило, описывается спецификациями OpenAPI / AsyncAPI.
+
+  - id: data_contract
+    name: "Data Contract"
+    name_ru: "Дата-контракт"
+    metamodel_level: governance
+    category: contract
+    description: >-
+      Формальное соглашение между владельцем и потребителем дата-продукта,
+      задающее условия качества, надёжности и своевременности данных.
+    rules: |-
+      - Содержит технические и бизнес-требования.
+      - Верифицируется автоматизированными проверками качества.
+    attributes:
+      - id: data_contract.sla
+        name: "SLA"
+        metamodel_level: governance
+        description: "Соглашение об уровне сервиса (доступность, актуальность, время реакции)."
+
+  - id: contract_requirement
+    name: "Contract Requirement"
+    name_ru: "Требование контракта"
+    metamodel_level: governance
+    category: contract
+    description: >-
+      Конкретное измеримое условие в дата-контракте (формат, допустимые значения,
+      частота обновления, полнота, точность и др.).
+    rules: |-
+      - Каждое требование привязано к одной или нескольким метрикам.
+      - Формулируется однозначно и может быть проверено автоматически.
+
+  - id: data_quality_check
+    name: "Data Quality Check"
+    name_ru: "Проверка качества данных"
+    metamodel_level: governance
+    category: data_quality
+    description: >-
+      Автоматизированное правило или процедура, проверяющая данные
+      на соответствие критериям качества (полнота, точность, согласованность).
+    rules: |-
+      - Содержит исполняемую логику (SQL/конфигурация).
+      - Имеет расписание и настройки уведомлений.
+      - Результаты исполнения фиксируются и отслеживаются.
+
+  - id: sla
+    name: "SLA"
+    name_ru: "Соглашение об уровне сервиса"
+    metamodel_level: governance
+    category: service_level
+    description: >-
+      Условие поддержки дата-продукта, определяющее целевые показатели
+      доступности, актуальности и реакции на инциденты.
+    rules: |-
+      - Привязано к дата-контракту и команде-провайдеру.
+
+  - id: incident
+    name: "Incident"
+    name_ru: "Инцидент"
+    metamodel_level: governance
+    category: event
+    description: >-
+      Зарегистрированное событие, указывающее на нарушение в работе системы,
+      качестве данных или процессе поставки данных и требующее реакции.
+    rules: |-
+      - Имеет серьёзность и статус обработки.
+      - Связывается с затронутыми компонентами и дата-продуктами.
+
+  - id: data_query
+    name: "Data Query"
+    name_ru: "Запрос к данным"
+    metamodel_level: governance
+    category: event
+    description: >-
+      Факт обращения пользователя или системы к данным для получения информации,
+      включая технические метаданные выполнения.
+    rules: |-
+      - Фиксирует метаданные запроса (но не сами данные).
+      - Используется для аудита и анализа нагрузки.
+
+  - id: access_role
+    name: "Access Role"
+    name_ru: "Роль доступа"
+    metamodel_level: access_security
+    category: access
+    description: >-
+      Набор разрешений, определяющий уровень доступа к данным, сервисам
+      или функциональности системы.
+    rules: |-
+      - Группирует однородные права.
+      - Имеет уровень привилегий (чтение/запись/администрирование).
+
+  - id: team_access_profile
+    name: "Team Access Profile"
+    name_ru: "Командный профиль доступа"
+    metamodel_level: access_security
+    category: access
+    description: >-
+      Предустановленный набор ролей доступа, назначаемый команде
+      для стандартизации прав её членов.
+    rules: |-
+      - Связывает команду с набором access-ролей.
+      - Упрощает онбординг и управление доступом.
+
+  - id: access_policy
+    name: "Access Policy"
+    name_ru: "Политика доступа"
+    metamodel_level: access_security
+    category: policy
+    description: >-
+      Формальное правило, определяющее, кто и при каких условиях
+      имеет доступ к данным, сервисам или функциям.
+    rules: |-
+      - Может ссылаться на категории чувствительности, роли и сегменты.
+
+  - id: employee_role_link
+    name: "Employee Role Link"
+    name_ru: "Связь роли и сотрудника"
+    metamodel_level: access_security
+    category: access
+    description: >-
+      Факт назначения роли доступа конкретному сотруднику,
+      предоставляющий ему соответствующие права.
+    rules: |-
+      - Может быть как частью командного профиля, так и прямым назначением.
+
+  - id: sensitive_level
+    name: "Sensitive Level"
+    name_ru: "Категория чувствительной информации"
+    metamodel_level: access_security
+    category: classification
+    description: >-
+      Классификационный уровень, определяющий степень конфиденциальности
+      данных и предписывающий правила их обработки, хранения и передачи.
+    rules: |-
+      - Определяет обязательные организационные и технические меры защиты.
+      - Используется для разметки бизнес-атрибутов, файлов, отчётов и т.п.
+
+relation_kinds:
+  - id: domain_has_value_stream
+    name: "Домен → Поток ценности"
+    from_kind: business_domain
+    to_kind: value_stream
+    metamodel_level: business
+    category: composition
+    direction: directed
+    description: "Поток ценности живёт внутри бизнес-домена."
+
+  - id: value_stream_has_stage
+    name: "Поток ценности → Стадия"
+    from_kind: value_stream
+    to_kind: value_stream_stage
+    metamodel_level: business
+    category: composition
+    direction: directed
+
+  - id: value_stream_uses_capability
+    name: "Поток ценности → Бизнес-способность"
+    from_kind: value_stream
+    to_kind: business_capability
+    metamodel_level: business
+    category: dependency
+    direction: directed
+
+  - id: data_product_represents_business_entity
+    name: "Дата-продукт → Бизнес-сущность"
+    from_kind: data_product
+    to_kind: business_entity
+    metamodel_level: data
+    category: representation
+    direction: directed
+
+  - id: data_product_implemented_by_pipeline
+    name: "Дата-продукт → Data Pipeline"
+    from_kind: data_product
+    to_kind: data_pipeline
+    metamodel_level: solution
+    category: implementation
+    direction: directed
+
+  - id: pipeline_uses_connector
+    name: "Data Pipeline → Connector"
+    from_kind: data_pipeline
+    to_kind: connector
+    metamodel_level: solution
+    category: composition
+    direction: directed
+
+  - id: pipeline_uses_transformation
+    name: "Data Pipeline → Transformation"
+    from_kind: data_pipeline
+    to_kind: transformation
+    metamodel_level: solution
+    category: composition
+    direction: directed
+
+  - id: pipeline_has_run
+    name: "Data Pipeline → Pipeline Run"
+    from_kind: data_pipeline
+    to_kind: data_pipeline_run
+    metamodel_level: solution
+    category: lifecycle
+    direction: directed
+
+  - id: data_product_uses_data_table
+    name: "Дата-продукт → Таблица данных"
+    from_kind: data_product
+    to_kind: data_table
+    metamodel_level: data
+    category: dependency
+    direction: directed
+
+  - id: business_attribute_implemented_in_data_table
+    name: "Бизнес-атрибут → Таблица данных"
+    from_kind: business_attribute
+    to_kind: data_table
+    metamodel_level: data
+    category: mapping
+    direction: directed
+
+  - id: data_product_has_contract
+    name: "Дата-продукт → Data Contract"
+    from_kind: data_product
+    to_kind: data_contract
+    metamodel_level: governance
+    category: contract
+    direction: directed
+
+  - id: contract_has_requirement
+    name: "Data Contract → Contract Requirement"
+    from_kind: data_contract
+    to_kind: contract_requirement
+    metamodel_level: governance
+    category: composition
+    direction: directed
+
+  - id: requirement_validated_by_dq_check
+    name: "Contract Requirement → Data Quality Check"
+    from_kind: contract_requirement
+    to_kind: data_quality_check
+    metamodel_level: governance
+    category: verification
+    direction: directed
+
+  - id: incident_affects_data_product
+    name: "Incident → Data Product"
+    from_kind: incident
+    to_kind: data_product
+    metamodel_level: governance
+    category: impact
+    direction: directed
+
+  - id: query_targets_data_product
+    name: "Data Query → Data Product"
+    from_kind: data_query
+    to_kind: data_product
+    metamodel_level: governance
+    category: usage
+    direction: directed
+
+  - id: employee_in_team
+    name: "Employee → Team"
+    from_kind: employee
+    to_kind: team
+    metamodel_level: people_org
+    category: membership
+    direction: directed
+
+  - id: team_has_access_profile
+    name: "Team → Team Access Profile"
+    from_kind: team
+    to_kind: team_access_profile
+    metamodel_level: access_security
+    category: access
+    direction: directed
+
+  - id: access_profile_includes_role
+    name: "Team Access Profile → Access Role"
+    from_kind: team_access_profile
+    to_kind: access_role
+    metamodel_level: access_security
+    category: composition
+    direction: directed
+
+  - id: employee_has_access_role
+    name: "Employee → Access Role"
+    from_kind: employee
+    to_kind: access_role
+    metamodel_level: access_security
+    category: access
+    direction: directed
+
+  - id: attribute_has_sensitive_level
+    name: "Business Attribute → Sensitive Level"
+    from_kind: business_attribute
+    to_kind: sensitive_level
+    metamodel_level: access_security
+    category: classification
+    direction: directed
