@@ -4,6 +4,12 @@ meta:
   model_name: "enterprise_metamodel"
   last_updated: "2025-11-17"
   locale: "ru-RU"
+  title: "Горизонтальный сценарий управления Enterprise-моделью"
+  description: >-
+    Описание горизонтального сценария банка, объединяющего бизнес,
+    данные, решения и инфраструктуру в едином контексте. Содержит
+    согласованные определения сущностей и связей между ними, позволяя
+    использовать одну точку правды вместо отдельных файлов сценариев.
 
 dictionaries:
   metamodel_levels:
@@ -584,7 +590,9 @@ entity_kinds:
     category: physical_data
     description: >-
       Структурированное хранилище данных (строки/столбцы) в БД или Lake,
-      содержащее реализации бизнес-атрибутов.
+      содержащее реализации бизнес-атрибутов и выступающее точкой
+      сопряжения бизнес-, дата- и инфраструктурных команд в горизонтальном
+      сценарии.
     rules: |-
       - Может служить источником для одного или нескольких дата-продуктов.
     attributes:
@@ -628,7 +636,8 @@ entity_kinds:
     category: physical_data
     description: >-
       Потоковая сущность (Kafka, очереди, pub/sub), через которую
-      транслируются события или сообщения между системами.
+      транслируются события или сообщения между системами. Служит
+      единым контрактом доставки данных в горизонтальном сценарии.
     attributes:
       - id: topic.schema_definition
         name: "Схема"
@@ -963,12 +972,18 @@ entity_kinds:
     category: infrastructure
     description: >-
       Абстракция над физической инфраструктурой (кластер, база, виртуальный
-      хост), к которой привязываются таблицы, топики и приложения.
+      хост), к которой привязываются таблицы, топики и приложения. Служит
+      опорой для планирования горизонтального сценария размещения данных и
+      сервисов.
     attributes:
       - id: logical_resource.type
         name: "Тип ресурса"
         metamodel_level: solution_details
         description: "БД, брокер сообщений, файловое хранилище и т.д."
+      - id: logical_resource.resource_kind
+        name: "Класс ресурса"
+        metamodel_level: solution_details
+        description: "Платформа данных, вычислительный кластер, middleware и т.п."
       - id: logical_resource.it_system_id
         name: "ИТ-система"
         metamodel_level: solution_details
@@ -1199,7 +1214,8 @@ entity_kinds:
     category: application
     description: >-
       Прикладной модуль, сервис, база данных или иная часть подсистемы,
-      выполняющая конкретную функцию.
+      выполняющая конкретную функцию и фиксирующая «строительный блок»
+      горизонтального сценария между решениями, данными и инфраструктурой.
     attributes:
       - id: component.type
         name: "Тип компонента"
@@ -2194,6 +2210,30 @@ relation_kinds:
     to_kind: logical_resource
     metamodel_level: solution_details
     category: deployment
+    direction: directed
+
+  - id: logical_resource_on_infrastructure_resource
+    name: "Logical Resource → Infrastructure Resource"
+    from_kind: logical_resource
+    to_kind: infrastructure_resource
+    metamodel_level: infrastructure_details
+    category: deployment
+    direction: directed
+
+  - id: logical_resource_owned_by_team
+    name: "Logical Resource → Team"
+    from_kind: logical_resource
+    to_kind: team
+    metamodel_level: business_details
+    category: ownership
+    direction: directed
+
+  - id: logical_resource_supports_it_system
+    name: "Logical Resource → IT System"
+    from_kind: logical_resource
+    to_kind: it_system
+    metamodel_level: solution_details
+    category: implementation
     direction: directed
 
   - id: code_repository_owned_by_team
