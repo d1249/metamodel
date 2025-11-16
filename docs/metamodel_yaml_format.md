@@ -11,11 +11,11 @@ meta:
   version: 1
   bank_code: "BANK"
   model_name: "enterprise_metamodel"
-  last_updated: "2025-11-16"
+  last_updated: "2025-11-17"
   locale: "ru-RU"            # необязательно, но рекомендуется
 
 dictionaries:
-  metamodel_levels: [...]      # справочники, доступные модели
+  metamodel_levels: [...]      # справочник Operational Metamodel с 6 уровнями
 
 entity_kinds:                  # перечень типов сущностей
   - id: ...
@@ -42,6 +42,19 @@ relation_kinds:               # перечень типов связей
 ```
 
 ## 2. Требования к ключевым разделам
+
+### 2.0. Уровни Operational Metamodel
+
+Справочник `dictionaries.metamodel_levels` фиксирует шесть уровней Operational Metamodel:
+
+1. `strategic_view` — Strategic View (цели, показатели, направления деятельности, портфель способностей).
+2. `business_details` — Business Details (функции, процессы, роли, подразделения, бизнес‑сервисы и правила).
+3. `data_details` — Data Details (информационные объекты, модели данных, хранилища, потоки и метаданные).
+4. `solution_details` — Solution Details (прикладные решения, сервисы, интерфейсы и логические интеграции).
+5. `component_details` — Component Details (внутренние компоненты решений, модули, конфигурационные единицы и их зависимости).
+6. `infrastructure_details` — Infrastructure Details (платформы, вычислительные ресурсы, среды, сетевые зоны и инфраструктурные сервисы).
+
+Каждая сущность, атрибут и связь обязана ссылаться на один из этих идентификаторов в поле `metamodel_level`.
 
 ### 2.1. `meta`
 - Обязательные поля: `version`, `bank_code`, `model_name`, `last_updated`.
@@ -82,7 +95,7 @@ relation_kinds:               # перечень типов связей
 attributes:
   - id: business_capability.maturity_level
     name: "Уровень зрелости"
-    metamodel_level: business
+    metamodel_level: strategic_view
     description: "..."
     properties:
       data_type: string

@@ -38,6 +38,15 @@ properties:
     items:
       $ref: '#/$defs/relation_kind'
 $defs:
+  metamodel_level_enum:
+    type: string
+    enum:
+      - strategic_view
+      - business_details
+      - data_details
+      - solution_details
+      - component_details
+      - infrastructure_details
   dictionary_item:
     type: object
     required: [id, name]
@@ -59,7 +68,7 @@ $defs:
       name:
         type: string
       metamodel_level:
-        type: string
+        $ref: '#/$defs/metamodel_level_enum'
       description:
         type: string
       properties:
@@ -78,7 +87,7 @@ $defs:
       name_ru:
         type: string
       metamodel_level:
-        type: string
+        $ref: '#/$defs/metamodel_level_enum'
       category:
         type: string
       description:
@@ -104,7 +113,7 @@ $defs:
       to_kind:
         type: string
       metamodel_level:
-        type: string
+        $ref: '#/$defs/metamodel_level_enum'
       category:
         type: string
       direction:

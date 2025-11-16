@@ -2,44 +2,43 @@ meta:
   version: 1
   bank_code: "BANK"
   model_name: "enterprise_metamodel"
-  last_updated: "2025-11-16"
+  last_updated: "2025-11-17"
   locale: "ru-RU"
 
 dictionaries:
   metamodel_levels:
-    - id: strategic
-      name: "Стратегический уровень"
+    - id: strategic_view
+      name: Strategic View
+      description: Цели, показатели, направления деятельности и портфель способностей
+        банка.
       order: 10
-    - id: business
-      name: "Бизнес-уровень (value streams, процессы, способности)"
+    - id: business_details
+      name: Business Details
+      description: Функции, процессы, роли, подразделения, бизнес-сервисы и правила.
       order: 20
-    - id: data
-      name: "Уровень данных и дата-продуктов"
+    - id: data_details
+      name: Data Details
+      description: Информационные объекты, модели данных, хранилища, потоки и метаданные.
       order: 30
-    - id: analytics
-      name: "Аналитика, ML, отчётность"
+    - id: solution_details
+      name: Solution Details
+      description: Прикладные решения, сервисы, интерфейсы и логические интеграции.
       order: 40
-    - id: solution
-      name: "Прикладные ИТ-решения и интеграции"
+    - id: component_details
+      name: Component Details
+      description: Внутренние компоненты решений, модули, конфигурационные единицы
+        и их зависимости.
       order: 50
-    - id: infrastructure
-      name: "Инфраструктура и платформы"
+    - id: infrastructure_details
+      name: Infrastructure Details
+      description: Платформы, вычислительные ресурсы, среды, сетевые зоны и инфраструктурные
+        сервисы.
       order: 60
-    - id: governance
-      name: "Управление качеством данных и контрактами"
-      order: 70
-    - id: access_security
-      name: "Доступ, безопасность и чувствительность данных"
-      order: 80
-    - id: people_org
-      name: "Организация, люди и роли"
-      order: 90
-
 entity_kinds:
   - id: job_family
     name: "Job Family"
     name_ru: "Job Family (семейство продуктов)"
-    metamodel_level: strategic
+    metamodel_level: strategic_view
     category: business_structure
     description: >-
       Группа продуктовых команд, объединённых общей зоной ответственности
@@ -53,7 +52,7 @@ entity_kinds:
   - id: value_stream
     name: "Value Stream"
     name_ru: "Поток создания ценности"
-    metamodel_level: business
+    metamodel_level: business_details
     category: value_delivery
     description: >-
       Сквозная последовательность действий от инициирующего события до
@@ -66,17 +65,17 @@ entity_kinds:
     attributes:
       - id: value_stream.goal
         name: "Цель потока"
-        metamodel_level: business
+        metamodel_level: business_details
         description: "Краткое формулирование результата, который должен получить потребитель."
       - id: value_stream.owner
         name: "Ответственный за поток"
-        metamodel_level: business
+        metamodel_level: business_details
         description: "Роль/должность, ответственная за end-to-end результат."
 
   - id: value
     name: "Value"
     name_ru: "Ценность"
-    metamodel_level: business
+    metamodel_level: strategic_view
     category: value_definition
     description: >-
       Полезный и значимый результат, который банк создаёт для потребителя:
@@ -88,7 +87,7 @@ entity_kinds:
   - id: business_capability
     name: "Business Capability"
     name_ru: "Бизнес-способность"
-    metamodel_level: business
+    metamodel_level: strategic_view
     category: capability
     description: >-
       Устойчивая, независимая от оргструктуры способность банка выполнять
@@ -101,13 +100,14 @@ entity_kinds:
     attributes:
       - id: business_capability.maturity_level
         name: "Уровень зрелости"
-        metamodel_level: business
-        description: "Классификация зрелости способности (например, initial / managed / optimized)."
+        metamodel_level: strategic_view
+        description: "Классификация зрелости способности (например, initial / managed
+          / optimized)."
 
   - id: business_domain
     name: "Business Domain"
     name_ru: "Бизнес-домен"
-    metamodel_level: strategic
+    metamodel_level: strategic_view
     category: business_structure
     description: >-
       Крупная, стратегически значимая область бизнеса, объединяющая
@@ -119,13 +119,14 @@ entity_kinds:
     attributes:
       - id: business_domain.criticality
         name: "Критичность домена"
-        metamodel_level: strategic
-        description: "Классификация важности домена для банка (Tier1/Tier2/Tier3 и т.п.)."
+        metamodel_level: strategic_view
+        description: "Классификация важности домена для банка (Tier1/Tier2/Tier3 и
+          т.п.)."
 
   - id: customer_segment
     name: "Customer Segment"
     name_ru: "Клиентский сегмент"
-    metamodel_level: business
+    metamodel_level: strategic_view
     category: customer
     description: >-
       Группа потребителей ценности (клиентов, партнёров, внутренних
@@ -138,7 +139,7 @@ entity_kinds:
   - id: channel
     name: "Channel"
     name_ru: "Канал взаимодействия"
-    metamodel_level: business
+    metamodel_level: business_details
     category: channel
     description: >-
       Точка взаимодействия банка с внешними и внутренними потребителями:
@@ -150,7 +151,7 @@ entity_kinds:
   - id: business_goal
     name: "Goal"
     name_ru: "Цель"
-    metamodel_level: strategic
+    metamodel_level: strategic_view
     category: goal
     description: >-
       Будущий желаемый результат деятельности банка, отражающий интересы
@@ -162,7 +163,7 @@ entity_kinds:
   - id: product
     name: "Product"
     name_ru: "Продукт"
-    metamodel_level: business
+    metamodel_level: business_details
     category: offering
     description: >-
       Оформленное предложение банка (финансовое или нефинансовое),
@@ -174,7 +175,7 @@ entity_kinds:
   - id: value_consumer
     name: "Consumer of Value"
     name_ru: "Потребитель ценности"
-    metamodel_level: business
+    metamodel_level: business_details
     category: stakeholder
     description: >-
       Лицо, группа лиц или организация (внешний или внутренний стейкхолдер),
@@ -185,7 +186,7 @@ entity_kinds:
   - id: value_stream_stage
     name: "Value Stream Stage"
     name_ru: "Стадия потока создания ценности"
-    metamodel_level: business
+    metamodel_level: business_details
     category: process
     description: >-
       Логически выделенный шаг или группа действий внутри потока создания
@@ -199,7 +200,7 @@ entity_kinds:
   - id: business_process
     name: "Business Process"
     name_ru: "Бизнес-процесс"
-    metamodel_level: business
+    metamodel_level: business_details
     category: process
     description: >-
       Упорядоченная последовательность действий внутри банка,
@@ -211,7 +212,7 @@ entity_kinds:
   - id: business_function
     name: "Business Function"
     name_ru: "Бизнес-функция"
-    metamodel_level: business
+    metamodel_level: business_details
     category: process
     description: >-
       Неподелимый с точки зрения управления кусок работы в рамках
@@ -223,7 +224,7 @@ entity_kinds:
   - id: business_entity
     name: "Business Entity"
     name_ru: "Бизнес-сущность"
-    metamodel_level: business
+    metamodel_level: data_details
     category: business_object
     description: >-
       Идентифицируемая сущность или ресурс, имеющий значение для бизнеса
@@ -234,13 +235,13 @@ entity_kinds:
     attributes:
       - id: business_entity.key
         name: "Бизнес-ключ"
-        metamodel_level: business
+        metamodel_level: data_details
         description: "Идентификатор сущности на уровне бизнес-логики."
 
   - id: employee
     name: "Employee"
     name_ru: "Сотрудник"
-    metamodel_level: people_org
+    metamodel_level: business_details
     category: people
     description: >-
       Физическое лицо, состоящее в трудовых отношениях с банком.
@@ -251,7 +252,7 @@ entity_kinds:
   - id: team
     name: "Team"
     name_ru: "Команда"
-    metamodel_level: people_org
+    metamodel_level: business_details
     category: people
     description: >-
       Кросс-функциональное объединение сотрудников, созданное для решения
@@ -263,7 +264,7 @@ entity_kinds:
   - id: data_product
     name: "Data Product"
     name_ru: "Дата-продукт"
-    metamodel_level: data
+    metamodel_level: data_details
     category: data_product
     description: >-
       Автономный, переиспользуемый набор данных с определённым качеством,
@@ -276,21 +277,21 @@ entity_kinds:
     attributes:
       - id: data_product.owner
         name: "Data Owner"
-        metamodel_level: data
+        metamodel_level: data_details
         description: "Роль/функция, ответственная за качество и эволюцию дата-продукта."
       - id: data_product.freshness_sla
         name: "SLA по актуальности"
-        metamodel_level: data
+        metamodel_level: data_details
         description: "Целевой лаг обновления данных."
       - id: data_product.lifecycle_status
         name: "Статус жизненного цикла"
-        metamodel_level: data
+        metamodel_level: data_details
         description: "Например: draft / active / deprecated / retired."
 
   - id: business_attribute
     name: "Business Attribute"
     name_ru: "Бизнес-атрибут"
-    metamodel_level: data
+    metamodel_level: data_details
     category: attribute
     description: >-
       Характеристика или свойство бизнес-сущности, представляющее собой
@@ -302,13 +303,13 @@ entity_kinds:
     attributes:
       - id: business_attribute.sensitive_level
         name: "Уровень чувствительности"
-        metamodel_level: access_security
+        metamodel_level: data_details
         description: "Категория чувствительности, определяющая меры защиты."
 
   - id: business_metric
     name: "Business Metric"
     name_ru: "Бизнес-метрика"
-    metamodel_level: analytics
+    metamodel_level: strategic_view
     category: metric
     description: >-
       Количественный показатель, рассчитываемый на основе бизнес-атрибутов,
@@ -320,7 +321,7 @@ entity_kinds:
   - id: feature
     name: "Feature"
     name_ru: "Фича (признак)"
-    metamodel_level: analytics
+    metamodel_level: data_details
     category: ml_feature
     description: >-
       Преобразованный или агрегированный атрибут, используемый в ML-моделях.
@@ -330,7 +331,7 @@ entity_kinds:
   - id: data_table
     name: "Data Table"
     name_ru: "Таблица данных"
-    metamodel_level: data
+    metamodel_level: data_details
     category: physical_data
     description: >-
       Структурированное хранилище данных (строки/столбцы) в БД или Lake,
@@ -340,13 +341,13 @@ entity_kinds:
     attributes:
       - id: data_table.schema
         name: "Схема таблицы"
-        metamodel_level: data
+        metamodel_level: data_details
         description: "Структура столбцов, типов данных и ключей."
 
   - id: file
     name: "File"
     name_ru: "Файл"
-    metamodel_level: data
+    metamodel_level: data_details
     category: physical_data
     description: >-
       Неструктурированный или слабоструктурированный набор данных,
@@ -358,7 +359,7 @@ entity_kinds:
   - id: ml_model
     name: "ML Model"
     name_ru: "ML-модель"
-    metamodel_level: analytics
+    metamodel_level: solution_details
     category: analytics
     description: >-
       Обученный алгоритм машинного обучения, используемый для
@@ -370,7 +371,7 @@ entity_kinds:
   - id: report
     name: "Report"
     name_ru: "Отчёт"
-    metamodel_level: analytics
+    metamodel_level: solution_details
     category: analytics
     description: >-
       Формализованное представление данных для конечного потребителя,
@@ -383,7 +384,7 @@ entity_kinds:
   - id: ai_agent
     name: "AI Agent"
     name_ru: "AI-агент"
-    metamodel_level: analytics
+    metamodel_level: solution_details
     category: analytics
     description: >-
       Автономная или полуавтономная программная система, использующая
@@ -395,7 +396,7 @@ entity_kinds:
   - id: notebook
     name: "Notebook"
     name_ru: "Ноутбук (анализ)"
-    metamodel_level: analytics
+    metamodel_level: solution_details
     category: tooling
     description: >-
       Интерактивная среда (например, Jupyter) для разработки кода,
@@ -407,7 +408,7 @@ entity_kinds:
   - id: data_pipeline
     name: "Data Pipeline"
     name_ru: "Поток загрузки данных"
-    metamodel_level: solution
+    metamodel_level: solution_details
     category: integration
     description: >-
       Автоматизированный процесс, который перемещает и трансформирует данные
@@ -419,7 +420,7 @@ entity_kinds:
   - id: connector
     name: "Connector"
     name_ru: "Коннектор"
-    metamodel_level: solution
+    metamodel_level: component_details
     category: integration
     description: >-
       Компонент, обеспечивающий подключение к источнику или приёмнику данных
@@ -430,7 +431,7 @@ entity_kinds:
   - id: transformation
     name: "Transformation"
     name_ru: "Трансформация"
-    metamodel_level: solution
+    metamodel_level: component_details
     category: integration
     description: >-
       Операция или набор операций, изменяющих структуру или содержание данных
@@ -441,7 +442,7 @@ entity_kinds:
   - id: data_pipeline_run
     name: "Data Pipeline Run"
     name_ru: "Результат запуска потока"
-    metamodel_level: solution
+    metamodel_level: solution_details
     category: integration_run
     description: >-
       Конкретный экземпляр выполнения потока загрузки данных, содержащий
@@ -453,7 +454,7 @@ entity_kinds:
   - id: api
     name: "API"
     name_ru: "API"
-    metamodel_level: solution
+    metamodel_level: solution_details
     category: integration
     description: >-
       Набор правил и протоколов, позволяющий системам взаимодействовать
@@ -465,7 +466,7 @@ entity_kinds:
   - id: data_contract
     name: "Data Contract"
     name_ru: "Дата-контракт"
-    metamodel_level: governance
+    metamodel_level: data_details
     category: contract
     description: >-
       Формальное соглашение между владельцем и потребителем дата-продукта,
@@ -476,13 +477,14 @@ entity_kinds:
     attributes:
       - id: data_contract.sla
         name: "SLA"
-        metamodel_level: governance
-        description: "Соглашение об уровне сервиса (доступность, актуальность, время реакции)."
+        metamodel_level: business_details
+        description: "Соглашение об уровне сервиса (доступность, актуальность, время
+          реакции)."
 
   - id: contract_requirement
     name: "Contract Requirement"
     name_ru: "Требование контракта"
-    metamodel_level: governance
+    metamodel_level: data_details
     category: contract
     description: >-
       Конкретное измеримое условие в дата-контракте (формат, допустимые значения,
@@ -494,7 +496,7 @@ entity_kinds:
   - id: data_quality_check
     name: "Data Quality Check"
     name_ru: "Проверка качества данных"
-    metamodel_level: governance
+    metamodel_level: component_details
     category: data_quality
     description: >-
       Автоматизированное правило или процедура, проверяющая данные
@@ -507,7 +509,7 @@ entity_kinds:
   - id: sla
     name: "SLA"
     name_ru: "Соглашение об уровне сервиса"
-    metamodel_level: governance
+    metamodel_level: business_details
     category: service_level
     description: >-
       Условие поддержки дата-продукта, определяющее целевые показатели
@@ -518,7 +520,7 @@ entity_kinds:
   - id: incident
     name: "Incident"
     name_ru: "Инцидент"
-    metamodel_level: governance
+    metamodel_level: solution_details
     category: event
     description: >-
       Зарегистрированное событие, указывающее на нарушение в работе системы,
@@ -530,7 +532,7 @@ entity_kinds:
   - id: data_query
     name: "Data Query"
     name_ru: "Запрос к данным"
-    metamodel_level: governance
+    metamodel_level: data_details
     category: event
     description: >-
       Факт обращения пользователя или системы к данным для получения информации,
@@ -542,7 +544,7 @@ entity_kinds:
   - id: access_role
     name: "Access Role"
     name_ru: "Роль доступа"
-    metamodel_level: access_security
+    metamodel_level: business_details
     category: access
     description: >-
       Набор разрешений, определяющий уровень доступа к данным, сервисам
@@ -554,7 +556,7 @@ entity_kinds:
   - id: team_access_profile
     name: "Team Access Profile"
     name_ru: "Командный профиль доступа"
-    metamodel_level: access_security
+    metamodel_level: business_details
     category: access
     description: >-
       Предустановленный набор ролей доступа, назначаемый команде
@@ -566,7 +568,7 @@ entity_kinds:
   - id: access_policy
     name: "Access Policy"
     name_ru: "Политика доступа"
-    metamodel_level: access_security
+    metamodel_level: business_details
     category: policy
     description: >-
       Формальное правило, определяющее, кто и при каких условиях
@@ -577,7 +579,7 @@ entity_kinds:
   - id: employee_role_link
     name: "Employee Role Link"
     name_ru: "Связь роли и сотрудника"
-    metamodel_level: access_security
+    metamodel_level: business_details
     category: access
     description: >-
       Факт назначения роли доступа конкретному сотруднику,
@@ -588,7 +590,7 @@ entity_kinds:
   - id: sensitive_level
     name: "Sensitive Level"
     name_ru: "Категория чувствительной информации"
-    metamodel_level: access_security
+    metamodel_level: data_details
     category: classification
     description: >-
       Классификационный уровень, определяющий степень конфиденциальности
@@ -602,7 +604,7 @@ relation_kinds:
     name: "Домен → Поток ценности"
     from_kind: business_domain
     to_kind: value_stream
-    metamodel_level: business
+    metamodel_level: business_details
     category: composition
     direction: directed
     description: "Поток ценности живёт внутри бизнес-домена."
@@ -611,7 +613,7 @@ relation_kinds:
     name: "Поток ценности → Стадия"
     from_kind: value_stream
     to_kind: value_stream_stage
-    metamodel_level: business
+    metamodel_level: business_details
     category: composition
     direction: directed
 
@@ -619,7 +621,7 @@ relation_kinds:
     name: "Поток ценности → Бизнес-способность"
     from_kind: value_stream
     to_kind: business_capability
-    metamodel_level: business
+    metamodel_level: strategic_view
     category: dependency
     direction: directed
 
@@ -627,7 +629,7 @@ relation_kinds:
     name: "Дата-продукт → Бизнес-сущность"
     from_kind: data_product
     to_kind: business_entity
-    metamodel_level: data
+    metamodel_level: data_details
     category: representation
     direction: directed
 
@@ -635,7 +637,7 @@ relation_kinds:
     name: "Дата-продукт → Data Pipeline"
     from_kind: data_product
     to_kind: data_pipeline
-    metamodel_level: solution
+    metamodel_level: solution_details
     category: implementation
     direction: directed
 
@@ -643,7 +645,7 @@ relation_kinds:
     name: "Data Pipeline → Connector"
     from_kind: data_pipeline
     to_kind: connector
-    metamodel_level: solution
+    metamodel_level: component_details
     category: composition
     direction: directed
 
@@ -651,7 +653,7 @@ relation_kinds:
     name: "Data Pipeline → Transformation"
     from_kind: data_pipeline
     to_kind: transformation
-    metamodel_level: solution
+    metamodel_level: component_details
     category: composition
     direction: directed
 
@@ -659,7 +661,7 @@ relation_kinds:
     name: "Data Pipeline → Pipeline Run"
     from_kind: data_pipeline
     to_kind: data_pipeline_run
-    metamodel_level: solution
+    metamodel_level: solution_details
     category: lifecycle
     direction: directed
 
@@ -667,7 +669,7 @@ relation_kinds:
     name: "Дата-продукт → Таблица данных"
     from_kind: data_product
     to_kind: data_table
-    metamodel_level: data
+    metamodel_level: data_details
     category: dependency
     direction: directed
 
@@ -675,7 +677,7 @@ relation_kinds:
     name: "Бизнес-атрибут → Таблица данных"
     from_kind: business_attribute
     to_kind: data_table
-    metamodel_level: data
+    metamodel_level: data_details
     category: mapping
     direction: directed
 
@@ -683,7 +685,7 @@ relation_kinds:
     name: "Дата-продукт → Data Contract"
     from_kind: data_product
     to_kind: data_contract
-    metamodel_level: governance
+    metamodel_level: data_details
     category: contract
     direction: directed
 
@@ -691,7 +693,7 @@ relation_kinds:
     name: "Data Contract → Contract Requirement"
     from_kind: data_contract
     to_kind: contract_requirement
-    metamodel_level: governance
+    metamodel_level: data_details
     category: composition
     direction: directed
 
@@ -699,7 +701,7 @@ relation_kinds:
     name: "Contract Requirement → Data Quality Check"
     from_kind: contract_requirement
     to_kind: data_quality_check
-    metamodel_level: governance
+    metamodel_level: data_details
     category: verification
     direction: directed
 
@@ -707,7 +709,7 @@ relation_kinds:
     name: "Incident → Data Product"
     from_kind: incident
     to_kind: data_product
-    metamodel_level: governance
+    metamodel_level: solution_details
     category: impact
     direction: directed
 
@@ -715,7 +717,7 @@ relation_kinds:
     name: "Data Query → Data Product"
     from_kind: data_query
     to_kind: data_product
-    metamodel_level: governance
+    metamodel_level: data_details
     category: usage
     direction: directed
 
@@ -723,7 +725,7 @@ relation_kinds:
     name: "Employee → Team"
     from_kind: employee
     to_kind: team
-    metamodel_level: people_org
+    metamodel_level: business_details
     category: membership
     direction: directed
 
@@ -731,7 +733,7 @@ relation_kinds:
     name: "Team → Team Access Profile"
     from_kind: team
     to_kind: team_access_profile
-    metamodel_level: access_security
+    metamodel_level: business_details
     category: access
     direction: directed
 
@@ -739,7 +741,7 @@ relation_kinds:
     name: "Team Access Profile → Access Role"
     from_kind: team_access_profile
     to_kind: access_role
-    metamodel_level: access_security
+    metamodel_level: business_details
     category: composition
     direction: directed
 
@@ -747,7 +749,7 @@ relation_kinds:
     name: "Employee → Access Role"
     from_kind: employee
     to_kind: access_role
-    metamodel_level: access_security
+    metamodel_level: business_details
     category: access
     direction: directed
 
@@ -755,6 +757,6 @@ relation_kinds:
     name: "Business Attribute → Sensitive Level"
     from_kind: business_attribute
     to_kind: sensitive_level
-    metamodel_level: access_security
+    metamodel_level: data_details
     category: classification
     direction: directed

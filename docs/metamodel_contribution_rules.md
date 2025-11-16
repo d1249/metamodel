@@ -9,8 +9,9 @@
 
 ## 2. Требования к структуре и схеме
 1. **Формат:**
-   - Поддерживайте ключи `version`, `bank_code`, `model_name`, `last_updated` и корневые разделы `dictionaries.entity_kinds`, `dictionaries.metamodel_levels`, `dictionaries.relation_kinds`.
+   - Поддерживайте ключи `version`, `bank_code`, `model_name`, `last_updated` и корневые разделы `dictionaries.metamodel_levels`, `entity_kinds`, `relation_kinds`.
    - Для новых сущностей обязательно указывайте `id`, `name`, `metamodel_level`, `category`, `description`, `rules`. Атрибуты и локализованные поля добавляйте только если они нужны.
+   - В поле `metamodel_level` используйте только шесть значений Operational Metamodel: `strategic_view`, `business_details`, `data_details`, `solution_details`, `component_details`, `infrastructure_details`.
 2. **JSON Schema:**
    - Перед коммитом выполните в корне проекта команду:
      ```bash
@@ -31,7 +32,7 @@
 2. **Семантические дубликаты:**
    - Перед созданием новой сущности или атрибута проверьте существующие определения. Перечитайте раздел `dictionaries.entity_kinds` и убедитесь, что требуемая концепция не описана ранее.
 3. **Противоречия уровней:**
-   - Значение `metamodel_level` должно ссылаться на существующий справочник `metamodel_levels`. Используйте только допустимые `id`.
+   - Значение `metamodel_level` должно ссылаться на один из шести уровней Operational Metamodel (`strategic_view`, `business_details`, `data_details`, `solution_details`, `component_details`, `infrastructure_details`).
 4. **Валидация связей:**
    - `from_kind` и `to_kind` в `relation_kinds` должны ссылаться на существующие `entity_kinds`.
    - Один и тот же тип связи не должен дублировать уже описанный смысл. Если нужна вариация, уточните `category` и описание.
@@ -42,11 +43,11 @@
      import yaml, pathlib, collections
      data = yaml.safe_load(pathlib.Path('data/enterprise_metamodel.yaml').read_text())
      ids = []
-     for item in data['dictionaries']['entity_kinds']:
+     for item in data['entity_kinds']:
          ids.append(('entity_kinds', item['id']))
          for attr in item.get('attributes', []):
              ids.append(('attributes', attr['id']))
-     for rel in data['dictionaries']['relation_kinds']:
+     for rel in data['relation_kinds']:
          ids.append(('relation_kinds', rel['id']))
      counter = collections.Counter(x for _, x in ids)
      duplicates = [ident for ident, count in counter.items() if count > 1]
