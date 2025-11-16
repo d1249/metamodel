@@ -86,6 +86,10 @@ relation_kinds:               # перечень типов связей
   `category`, `direction`.
 - Дополнительно допускаются поля `description`, `rules`, `cardinality`,
   `properties`. Это обеспечивает расширяемость без пересмотра схемы.
+- Каталог фиксирует и «горизонтальные» связи, позволяющие проследить ответственность
+  Job Family за активы разных уровней: `job_family_has_bank_product`,
+  `job_family_owns_integration`, `job_family_uses_logical_resource`,
+  `job_family_depends_on_infrastructure_resource`.
 
 ## 3. Атрибуты и их свойства
 
