@@ -29,12 +29,18 @@ CATEGORY_TO_CLASS = {
     "data": "dataStore",
     "data_object": "dataStore",
     "data_product": "dataStore",
+    "business_object": "businessEntity",
     "application": "itSystem",
     "solution": "itSystem",
     "component": "component",
     "api": "api",
     "integration": "api",
     "infrastructure": "infra",
+}
+
+ID_TO_CLASS = {
+    "component": "component",
+    "business_entity": "businessEntity",
 }
 
 CATEGORY_TO_SHAPE = {
@@ -57,12 +63,14 @@ CATEGORY_TO_SHAPE = {
 RELATION_STYLES = {
     "aggregation": "stroke:#2a9d8f,stroke-width:2px",
     "composition": "stroke:#e76f51,stroke-width:2px",
-    "implements": "stroke:#264653,stroke-dasharray: 5 3",
-    "realizes": "stroke:#264653,stroke-dasharray: 5 3",
-    "dependency": "stroke:#6d6875,stroke-dasharray: 2 4",
-    "association": "stroke:#3a86ff",
-    "flow": "stroke:#8338ec",
+    "implements": "stroke:#264653,stroke-dasharray: 5 3,stroke-width:2px",
+    "realizes": "stroke:#264653,stroke-dasharray: 5 3,stroke-width:2px",
+    "dependency": "stroke:#6d6875,stroke-dasharray: 2 4,stroke-width:1.5px",
+    "association": "stroke:#3a86ff,stroke-width:1.5px",
+    "flow": "stroke:#8338ec,stroke-width:1.5px",
 }
+
+DEFAULT_LINK_STYLE = "stroke:#3a86ff,stroke-width:1.5px"
 
 NOTE_ALLOWLIST = {"data_product", "data_contract", "business_capability", "goal"}
 
@@ -78,7 +86,10 @@ HIGHLIGHT_RULES = (
 
 
 def class_for_entity(entity: Entity) -> str:
-    return CATEGORY_TO_CLASS.get(entity.category, "other")
+    return ID_TO_CLASS.get(
+        entity.id,
+        CATEGORY_TO_CLASS.get(entity.category, "other"),
+    )
 
 
 def shape_for_entity(entity: Entity) -> Tuple[str, str]:
@@ -95,4 +106,7 @@ def highlight_styles(entity: Entity) -> Iterable[str]:
 
 
 def link_style_for_relation(relation: Relation) -> str:
-    return RELATION_STYLES.get(relation.category, "stroke:#3a86ff")
+    style = RELATION_STYLES.get(relation.category, DEFAULT_LINK_STYLE)
+    if "stroke-width" not in style:
+        style = f"{style},stroke-width:1.5px"
+    return style

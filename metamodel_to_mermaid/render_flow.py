@@ -15,6 +15,24 @@ from .styles import (
     shape_for_entity,
 )
 
+LEVEL_ORDER = [
+    "strategic_view",
+    "business_details",
+    "data_details",
+    "solution_details",
+    "component_details",
+    "infrastructure_details",
+]
+
+LEVEL_LABELS = {
+    "strategic_view": "Strategic view",
+    "business_details": "Business details",
+    "data_details": "Data details",
+    "solution_details": "Solution details",
+    "component_details": "Component details",
+    "infrastructure_details": "Infrastructure details",
+}
+
 
 class FlowchartRenderer:
     def __init__(
@@ -34,13 +52,13 @@ class FlowchartRenderer:
 
     def render(self) -> str:
         lines: List[str] = []
-        lines.append("%%{init: {'theme': '%s'}}%%" % self.theme)
+        lines.append(f"%%{{init: {{'theme': '{self.theme}'}}}}%%")
         lines.append("graph LR")
         self._emit_class_defs(lines)
         groups = group_entities(self.metamodel.entities, self.group_by)
-        for group_name, entities in sorted(groups.items()):
+        for group_name, entities in self._sorted_groups(groups):
             subgraph_id = group_name.replace(" ", "_") or "group"
-            lines.append(f"  subgraph {subgraph_id}[\"{group_name}\"]")
+            lines.append(f"  subgraph {subgraph_id}[\"{self._group_label(group_name)}\"]")
             for entity in sorted(entities, key=lambda e: e.name.lower()):
                 lines.extend(self._render_entity(entity))
             lines.append("  end")
@@ -103,3 +121,19 @@ class FlowchartRenderer:
             lines.append(f"    class {node_id} {class_name};")
         lines.append("  end")
         return lines
+
+    def _sorted_groups(self, groups: dict[str, List[Entity]]):
+        if self.group_by in {"level", "metamodel_level"}:
+            order = {name: idx for idx, name in enumerate(LEVEL_ORDER)}
+
+            def key(item: tuple[str, List[Entity]]):
+                name = item[0]
+                return (order.get(name, len(order)), name)
+
+            return sorted(groups.items(), key=key)
+        return sorted(groups.items())
+
+    def _group_label(self, group_name: str) -> str:
+        if self.group_by in {"level", "metamodel_level"}:
+            return LEVEL_LABELS.get(group_name, group_name)
+        return group_name

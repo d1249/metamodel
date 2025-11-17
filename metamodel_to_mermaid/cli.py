@@ -44,7 +44,7 @@ def main(argv: Iterable[str] | None = None) -> None:
     filtered = filter_by_view(metamodel, args.view)
 
     if args.diagram_type == "er":
-        renderer = ERDiagramRenderer(filtered)
+        renderer = ERDiagramRenderer(filtered, theme=args.theme)
     else:
         renderer = FlowchartRenderer(
             filtered,

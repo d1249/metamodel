@@ -9,11 +9,12 @@ DATA_CATEGORIES = {"data", "data_object", "data_product"}
 
 
 class ERDiagramRenderer:
-    def __init__(self, metamodel: Metamodel) -> None:
+    def __init__(self, metamodel: Metamodel, *, theme: str = "default") -> None:
         self.metamodel = metamodel
+        self.theme = theme
 
     def render(self) -> str:
-        lines: List[str] = ["erDiagram"]
+        lines: List[str] = [f"%%{{init: {{'theme': '{self.theme}'}}}}%%", "erDiagram"]
         entity_ids = {entity.id for entity in self.metamodel.entities if entity.category in DATA_CATEGORIES}
         for relation in self.metamodel.relations:
             if relation.source not in entity_ids or relation.target not in entity_ids:
